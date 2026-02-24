@@ -1,0 +1,25 @@
+node_modules/
+.env
+*.log
+dist/
+
+# Datasets
+dataset/
+new dataset/
+copy/
+-Force/
+
+# ML Models
+ml model/
+backend/ml_models/
+backend/eng.traineddata
+
+# System / Temp
+.kiro/
+temp_input.json
+.DS_Store
+Thumbs.db
+
+# Backend uploads
+backend/uploads/*
+!backend/uploads/.gitkeep

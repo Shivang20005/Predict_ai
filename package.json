@@ -1,0 +1,16 @@
+{
+    "name": "predict-ai-root",
+    "version": "1.0.0",
+    "description": "Root package to manage PREDICT AI scripts",
+    "scripts": {
+        "start": "npm start --prefix backend",
+        "dev": "npm run dev --prefix backend",
+        "install-backend": "npm install --prefix backend"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^3.0.3",
+        "mysql2": "^3.16.1"
+    }
+}

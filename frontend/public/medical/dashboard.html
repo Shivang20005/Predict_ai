@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --medical-primary: #06d6a0;
+            --medical-secondary: #118ab2;
+            --dashboard-bg: #0f172a;
+        }
+
+        body {
+            background-color: var(--dashboard-bg);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(6, 214, 160, 0.1);
+            color: var(--medical-primary);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--medical-primary);
+        }
+
+        .stat-card i {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 4rem;
+            opacity: 0.1;
+            color: var(--medical-primary);
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 1rem;
+        }
+
+        .order-row {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .order-row:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: scale(1.01);
+        }
+
+        .order-row td {
+            padding: 1.2rem;
+        }
+
+        .order-row td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        .order-row td:last-child {
+            border-radius: 0 15px 15px 0;
+        }
+
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(255, 183, 3, 0.2);
+            color: #ffb703;
+        }
+
+        .status-accepted {
+            background: rgba(6, 214, 160, 0.2);
+            color: #06d6a0;
+        }
+
+        .status-delivered {
+            background: rgba(17, 138, 178, 0.2);
+            color: #118ab2;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            margin-right: 0.5rem;
+        }
+
+        .btn-accept {
+            background: var(--medical-primary);
+            color: #0f172a;
+        }
+
+        .btn-deliver {
+            background: var(--medical-secondary);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo-container" style="margin-bottom: 3rem;">
+            <img src="/images/logo.png" alt="Logo" class="logo-img">
+            <span style="color: white;">PREDICT_AI</span>
+        </div>
+        <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" class="nav-item"><i class="fas fa-box"></i> Active Orders</a>
+        <a href="#" class="nav-item"><i class="fas fa-history"></i> History</a>
+        <a href="#" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
+        <div style="margin-top: auto;">
+            <a href="#" onclick="logout()" class="nav-item" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i>
+                Logout</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem;">
+            <div>
+                <h1 id="shopName">Welcome, Store Name</h1>
+                <p style="color: #94a3b8;">Manage your orders and notifications</p>
+            </div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div onclick="loadOrders()"
+                    style="cursor: pointer; background: rgba(255,255,255,0.1); padding: 0.8rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-sync-alt" title="Refresh Orders"></i>
+                </div>
+                <div id="notifications-bell" onclick="toggleNotifications()"
+                    style="position: relative; cursor: pointer;">
+                    <i class="fas fa-bell" style="font-size: 1.5rem;"></i>
+                    <span id="notif-count"
+                        style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 0.7rem; padding: 2px 5px; border-radius: 50%; display: none;">0</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p id="totalOrders" style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">0</p>
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <p id="pendingOrders" style="font-size: 2rem; font-weight: 800; margin-top: 1rem; color: #ffb703;">0</p>
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-card">
+                <h3>Delivered</h3>
+                <p id="deliveredOrders"
+                    style="font-size: 2rem; font-weight: 800; margin-top: 1rem; color: var(--medical-primary);">0</p>
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+
+        <section>
+            <h2 style="margin-bottom: 1.5rem;">Recent Orders</h2>
+            <div style="overflow-x: auto;">
+                <table class="order-table">
+                    <thead>
+                        <tr style="text-align: left; color: #94a3b8;">
+                            <th>Order ID</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderList">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Accept Order Modal -->
+    <div id="acceptModal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-bottom: 1.5rem;">Confirm Order</h2>
+            <div class="input-group">
+                <label>Estimated Delivery Date & Time</label>
+                <input type="datetime-local" id="delivery_date"
+                    style="width: 100%; padding: 1rem; background: #0f172a; border: 1px solid #334155; border-radius: 12px; color: white; margin-bottom: 1rem;">
+
+                <label>Total Cost (₹)</label>
+                <input type="number" id="order_cost" placeholder="Enter total amount"
+                    style="width: 100%; padding: 1rem; background: #0f172a; border: 1px solid #334155; border-radius: 12px; color: white;">
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button onclick="confirmAccept()" class="btn-action btn-accept" style="flex: 1;">Send to
+                    Patient</button>
+                <button onclick="closeModal()" class="btn-action"
+                    style="flex: 1; background: #334155; color: white;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="margin-bottom: 1.5rem;">Order Details</h2>
+            <div id="detailsContent" style="color: #94a3b8; line-height: 1.6;">
+                <!-- Loaded via JS -->
+            </div>
+            <div style="margin-top: 2rem;">
+                <button onclick="closeDetailsModal()" class="btn-action"
+                    style="width: 100%; background: #334155; color: white;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+
+    <script>
+        let selectedOrderId = null;
+
+        async function initDashboard() {
+            const token = localStorage.getItem('token');
+            if (!token) window.location.href = '/medical/login.html';
+
+            document.getElementById('shopName').innerText = `Welcome, ${localStorage.getItem('shopName')}`;
+            loadOrders();
+            loadNotifications();
+        }
+
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/medical/bookings', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const orders = data.bookings;
+                    document.getElementById('totalOrders').innerText = orders.length;
+                    document.getElementById('pendingOrders').innerText = orders.filter(o => o.status === 'pending').length;
+                    document.getElementById('deliveredOrders').innerText = orders.filter(o => o.status === 'delivered').length;
+
+                    const list = document.getElementById('orderList');
+                    list.innerHTML = orders.map(order => `
+                        <tr class="order-row">
+                            <td>#${order.order_id}</td>
+                            <td>
+                                <div style="font-weight: 700;">${order.patient_name}</div>
+                                <div style="font-size: 0.8rem; color: #94a3b8;"><i class="fas fa-phone"></i> ${order.phone}</div>
+                                <div style="font-size: 0.8rem; color: #94a3b8;"><i class="fas fa-map-marker-alt"></i> ${order.address}</div>
+                            </td>
+                            <td><span class="status-badge status-${order.status}">${order.status.replace(/_/g, ' ')}</span></td>
+                            <td>
+                                <div>${new Date(order.created_at).toLocaleDateString()}</div>
+                                ${order.cost ? `<div style="font-size: 0.8rem; color: #06d6a0;">₹${order.cost}</div>` : ''}
+                            </td>
+                            <td>
+                                ${order.status === 'pending' ? `<button onclick="openAcceptModal(${order.order_id})" class="btn-action btn-accept">Accept Order</button>` : ''}
+                                ${order.status === 'confirmed' ? `<button onclick="updateStatus(${order.order_id}, 'out_for_delivery')" class="btn-action" style="background: #f59e0b; color: white;">Out for Delivery</button>` : ''}
+                                ${order.status === 'out_for_delivery' ? `<button onclick="updateStatus(${order.order_id}, 'delivered')" class="btn-action btn-deliver">Mark Delivered</button>` : ''}
+                                <button onclick="viewDetails(${order.order_id})" class="btn-action" style="background: rgba(255,255,255,0.1); color: white;"><i class="fas fa-eye"></i> Details</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    console.error('Failed to load orders:', data.message);
+                    // Don't alert aggressively on load, but log it or show in UI
+                    document.getElementById('orderList').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Error loading orders: ${data.message}</td></tr>`;
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById('orderList').innerHTML = `<tr><td colspan="5" style="text-align: center; color: #ef4444;">Connection Error. Please refresh.</td></tr>`;
+            }
+        }
+
+        function openAcceptModal(id) {
+            selectedOrderId = id;
+            document.getElementById('acceptModal').style.display = 'flex';
+        }
+
+        function closeModal() { document.getElementById('acceptModal').style.display = 'none'; }
+
+        async function confirmAccept() {
+            const date = document.getElementById('delivery_date').value;
+            const cost = document.getElementById('order_cost').value;
+
+            if (!date) return alert('Please set a delivery date');
+            if (!cost) return alert('Please set the total cost');
+
+            await updateStatus(selectedOrderId, 'accepted', date, cost);
+            closeModal();
+        }
+
+        async function updateStatus(id, status, date = null, cost = null) {
+            try {
+                const body = { status };
+                if (date) body.delivery_date = date;
+                if (cost) body.cost = cost;
+
+                const res = await fetch(`/api/medical/update-status/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Order updated!');
+                    loadOrders();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function viewDetails(id) {
+            try {
+                const res = await fetch('/api/medical/bookings', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const order = data.bookings.find(o => o.order_id === id);
+                    if (!order) return;
+
+                    let sharedDetails = '<p>No records attached</p>';
+                    if (order.prescription_id || order.report_id) {
+                        const type = order.prescription_id ? 'prescription' : 'report';
+                        const recId = order.prescription_id || order.report_id;
+                        const recRes = await fetch(`/api/patient/${type}/${recId}`, {
+                            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                        });
+                        const recData = await recRes.json();
+                        if (recData.success) {
+                            const record = recData.prescription || recData.report;
+                            sharedDetails = type === 'prescription' ? `
+                                <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                                    <h4 style="color: var(--medical-primary);">Prescription Details:</h4>
+                                    <p><strong>Doctor:</strong> Dr. ${record.doctor_name}</p>
+                                    <p><strong>Diagnosis:</strong> ${record.diagnosis}</p>
+                                    <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; font-family: monospace; white-space: pre-wrap; margin-top: 0.5rem; color: white;">${record.prescription}</div>
+                                </div>
+                            ` : `
+                                <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                                    <h4 style="color: var(--medical-primary);">Lab Report Details:</h4>
+                                    <p><strong>Test Type:</strong> ${record.report_type}</p>
+                                    <p><strong>Result:</strong> ${record.result}</p>
+                                    <p><strong>Date:</strong> ${new Date(record.uploaded_at).toLocaleDateString()}</p>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    const content = document.getElementById('detailsContent');
+                    content.innerHTML = `
+                        <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                            <p><strong>Patient:</strong> ${order.patient_name}</p>
+                            <p><strong>Phone:</strong> ${order.phone}</p>
+                            <p><strong>Address:</strong> ${order.address}</p>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <p><strong>Notes:</strong> ${order.notes || 'No special instructions'}</p>
+                        </div>
+                        ${sharedDetails}
+                    `;
+                    document.getElementById('detailsModal').style.display = 'flex';
+                }
+            } catch (err) { console.error('View details error:', err); }
+        }
+
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/medical/login.html';
+        }
+
+        initDashboard();
+    </script>
+</body>
+
+</html>

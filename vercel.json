@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "backend/server.js",
+            "use": "@vercel/node"
+        },
+        {
+            "src": "frontend/**/*",
+            "use": "@vercel/static"
+        }
+    ],
+    "rewrites": [
+        {
+            "source": "/api/(.*)",
+            "destination": "/backend/server.js"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/frontend/public/$1"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production"
+    }
+}

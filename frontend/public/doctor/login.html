@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Login - PREDICT_AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-color: #ffffff;
+            --input-bg: rgba(255, 255, 255, 0.2);
+            --btn-color: #be185d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('/images/doctor.png') no-repeat center center/cover;
+            overflow: hidden;
+        }
+
+        /* Overlay to ensure text readability */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            /* Darken bg slightly */
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 3rem;
+            width: 90%;
+            max-width: 900px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .brand-side {
+            flex: 1;
+            text-align: center;
+            color: white;
+            padding-right: 2rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-logo {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            color: #ecfdf5;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        .brand-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #e0f2fe);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .brand-slogan {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .form-side {
+            flex: 1.2;
+            padding: 1rem;
+        }
+
+        .form-title {
+            color: white;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background-color: #be123c;
+            /* Similar Red/Pink from image */
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(190, 18, 60, 0.4);
+            margin-top: 1rem;
+        }
+
+        .btn-login:hover {
+            background-color: #9f1239;
+            transform: translateY(-2px);
+        }
+
+        .btn-signup {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .btn-signup:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .glass-card {
+                flex-direction: column;
+                width: 85%;
+                padding: 2rem;
+            }
+
+            .brand-side {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                padding-right: 0;
+                padding-bottom: 2rem;
+            }
+
+            .form-side {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="glass-card">
+            <!-- Left Side: Branding -->
+            <div class="brand-side">
+                <i class="fas fa-stethoscope brand-logo"></i> <!-- Medical Icon -->
+                <h1 class="brand-name">PREDICT_AI</h1>
+                <p class="brand-slogan">Health for Us</p>
+            </div>
+
+            <!-- Right Side: Login Form -->
+            <div class="form-side">
+                <h2 class="form-title">Log in</h2>
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" class="form-input" id="email" placeholder="Email Address" required
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" class="form-input" id="password" placeholder="Password" required
+                            autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="btn-login">Log In</button>
+                    <a href="/doctor/signup.html" class="btn-signup">Create account</a>
+                    <a href="/" class="btn-signup"
+                        style="margin-top: 1rem; border-color: rgba(255,255,255,0.3); opacity: 0.8;">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/common.js"></script>
+    <script src="/js/validator.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/doctor/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', 'doctor');
+                    localStorage.setItem('doctorName', data.doctor.name);
+                    localStorage.setItem('doctorStatus', data.doctor.availability_status);
+
+                    // Simple success animation or alert before redirect
+                    const btn = document.querySelector('.btn-login');
+                    btn.innerHTML = '<i class="fas fa-check"></i> Success';
+                    btn.style.background = '#10b981';
+
+                    setTimeout(() => {
+                        window.location.href = '/doctor/dashboard.html';
+                    }, 800);
+                } else {
+                    alert('Login failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred. Please check console.');
+            }
+        });
+    </script>
+</body>
+
+</html>

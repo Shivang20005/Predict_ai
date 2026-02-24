@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Doctor - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        .doctor-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(76, 201, 240, 0.2);
+        }
+
+        .doctor-image-container {
+            height: 220px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background: #f1f5f9;
+        }
+
+        .doctor-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.6s ease;
+        }
+
+        .doctor-card:hover .doctor-img {
+            transform: scale(1.08);
+        }
+
+        .availability-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(6, 214, 160, 0.95);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            box-shadow: 0 4px 10px rgba(6, 214, 160, 0.3);
+            z-index: 2;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .doctor-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doctor-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+        }
+
+        .doctor-specialization {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-bottom: 1.25rem;
+            background: #f8fafc;
+            /* padding: 0.25rem 0.5rem; */
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .info-row span:first-child {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .action-area {
+            margin-top: auto;
+            padding-top: 1.25rem;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fees {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #1e293b;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-book {
+            box-shadow: 0 4px 14px rgba(0, 118, 255, 0.39);
+        }
+
+        /* Helper utility since we can't rely on bootstrap being fully there */
+        .d-flex {
+            display: flex;
+        }
+
+        .justify-content-between {
+            justify-content: space-between;
+        }
+
+        .align-items-start {
+            align-items: flex-start;
+        }
+
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)), url('/images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="logo-container">
+                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <input type="text" id="searchDoctor" placeholder="Search by name or specialization..."
+                    data-i18n-placeholder="search_doctor_placeholder" class="form-input"
+                    style="width: 300px; padding: 0.5rem 1rem;">
+                <a href="/patient/dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;"
+                    data-i18n="back">Back</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4" data-i18n="available_doctors">Available Doctors</h2>
+
+        <div id="doctorsGrid" class="grid grid-3">
+            <!-- Doctors will be loaded here -->
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 class="mb-2" data-i18n="book_appt">Book Appointment</h2>
+            <p class="mb-4" id="modalDoctorName">Dr. Name</p>
+
+            <form id="bookingForm">
+                <input type="hidden" id="doctorId">
+
+                <div class="form-group">
+                    <label class="form-label" data-i18n="visit_reason">Reason for Visit / Notes</label>
+                    <textarea class="form-input" id="appointmentNotes" rows="4"
+                        placeholder="Briefly describe your issue (Optional)..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-outline" onclick="closeModal()"
+                        data-i18n="cancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="confirm_booking">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadDoctors);
+
+        async function loadDoctors() {
+            const grid = document.getElementById('doctorsGrid');
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/patient/doctors', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    grid.innerHTML = '';
+
+                    data.doctors.forEach(doctor => {
+                        grid.innerHTML += createDoctorCard(doctor);
+                    });
+
+                    if (data.doctors.length === 0) {
+                        grid.innerHTML = '<p class="text-center" style="grid-column: 1/-1;">No doctors found.</p>';
+                    }
+
+                    if (window.refreshTranslations) window.refreshTranslations();
+                }
+            } catch (error) {
+                console.error(error);
+                grid.innerHTML = '<p class="text-danger">Failed to load doctors.</p>';
+            }
+        }
+
+        function createDoctorCard(doc) {
+            const isAvailable = doc.availability_status === 'available';
+            const btnState = isAvailable ? '' : 'disabled';
+            // Button style: solid for available, outline/gray for unavailable
+            const btnClass = isAvailable ? 'btn-primary' : 'btn-secondary';
+
+            const btnKey = isAvailable ? 'book_appt' : 'not_available';
+            const onclick = isAvailable ? `openBooking('${doc.doctor_id}', '${doc.name}')` : '';
+
+            // Random rating between 4.5 and 5.0 for demo purposes since backend might not have it
+            const rating = (4.5 + Math.random() * 0.5).toFixed(1);
+            const reviewCount = Math.floor(Math.random() * 50) + 10;
+
+            return `
+                <div class="doctor-card">
+                    <div class="doctor-image-container">
+                        ${isAvailable ? `<div class="availability-badge" data-i18n="available_now">Available Now</div>` : ''}
+                        <img src="/images/doctor.png" alt="${doc.name}" class="doctor-img">
+                    </div>
+                    
+                    <div class="doctor-content">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h3 class="doctor-name">${doc.name}</h3>
+                                <div class="doctor-specialization">${doc.specialization}</div>
+                            </div>
+                            ${doc.is_verified ? `<span title="Verified Doctor" style="color: var(--primary); font-size: 1.2rem;">✅</span>` : ''}
+                        </div>
+
+                        <div class="rating-container">
+                            <span>⭐</span>
+                            <span style="font-weight: 700; color: #1e293b;">${rating}</span>
+                            <span style="color: #94a3b8;">(${reviewCount} reviews)</span>
+                        </div>
+                        
+                        <div class="info-row">
+                            <span>🏥</span>
+                            <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.hospital_name}</span>
+                        </div>
+                        <div class="info-row">
+                            <span>🕒</span>
+                            <span>Mon - Fri, 09:00 AM - 05:00 PM</span> 
+                        </div>
+
+                        <div class="action-area">
+                            <div class="fees">₹${doc.fees}</div>
+                            <button class="btn ${btnClass}" ${btnState} onclick="${onclick}" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;" data-i18n="${btnKey}">
+                                ${isAvailable ? 'Book Now' : 'Busy'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openBooking(id, name) {
+            document.getElementById('doctorId').value = id;
+            document.getElementById('modalDoctorName').textContent = 'Booking with ' + name;
+            document.getElementById('bookingModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const doctorId = document.getElementById('doctorId').value;
+            const notes = document.getElementById('appointmentNotes').value;
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/patient/book-appointment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ doctor_id: doctorId, notes })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Appointment requested successfully! The doctor will be notified.');
+                    closeModal();
+                } else {
+                    alert('Booking failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred.');
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchDoctor').addEventListener('input', function (e) {
+            const term = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.doctor-card');
+
+            cards.forEach(card => {
+                const name = card.querySelector('.doctor-name').textContent.toLowerCase();
+                const spec = card.querySelector('.doctor-specialization').textContent.toLowerCase();
+
+                if (name.includes(term) || spec.includes(term)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

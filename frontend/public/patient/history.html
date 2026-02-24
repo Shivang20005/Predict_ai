@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical History - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .history-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .card-type {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .type-report {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+
+        .type-prescription {
+            background: rgba(114, 9, 183, 0.2);
+            color: #7209b7;
+        }
+
+        .btn-share {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-share:hover {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 5rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" class="logo-container">
+                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <a href="/patient/dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    <i class="fas fa-arrow-left"></i> History
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header style="margin-top: 2rem;">
+            <h1 data-i18n="history">Medical History</h1>
+            <p style="color: #94a3b8;">Your consolidated health records, lab reports, and prescriptions.</p>
+        </header>
+
+        <div id="historyList" class="history-grid">
+            <!-- Items loaded via JS -->
+            <div class="empty-state">
+                <i class="fas fa-folder-open" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                <p>No records found in your history.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Viewer Modal -->
+    <div id="viewerModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; height: 80vh; display: flex; flex-direction: column;">
+            <span class="modal-close" onclick="closeViewer()">&times;</span>
+            <h2 id="viewerTitle" class="mb-3">Record Viewer</h2>
+            <div id="viewerBody"
+                style="flex: 1; overflow-y: auto; background: #f8fafc; border-radius: 12px; padding: 1.5rem; color: #1e293b;">
+                <!-- Prescription content injected here -->
+            </div>
+            <div id="viewerFooter" style="margin-top: 1.5rem;">
+                <button class="btn btn-outline" onclick="closeViewer()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+        async function loadHistory() {
+            const token = localStorage.getItem('token');
+            const patientId = localStorage.getItem('patientId');
+            if (!token || !patientId) window.location.href = '/patient/login.html';
+
+            try {
+                // Fetch Reports
+                const resR = await fetch(`/api/patient/reports/${patientId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const dataR = await resR.json();
+
+                // Fetch Prescriptions
+                const resP = await fetch(`/api/patient/prescriptions/${patientId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const dataP = await resP.json();
+
+                const list = document.getElementById('historyList');
+                let html = '';
+
+                if (dataR.success) {
+                    dataR.reports.forEach(report => {
+                        html += `
+                            <div class="history-card">
+                                <span class="card-type type-report">Lab Report</span>
+                                <h3>${report.report_type || 'General Test'}</h3>
+                                <p style="color: #94a3b8; font-size: 0.9rem;">Date: ${new Date(report.uploaded_at).toLocaleDateString()}</p>
+                                <div style="margin-top: 1rem;">
+                                    <strong>Result:</strong> <span style="color: ${report.result === 'Positive' ? '#ef4444' : '#10b981'}">${report.result}</span>
+                                </div>
+                                <button onclick="shareRecord('report', ${report.report_id})" class="btn-share"><i class="fas fa-share-alt"></i> Share with Medical</button>
+                                <button onclick="openRecordViewer('report', ${JSON.stringify(report).replace(/"/g, '&quot;')})" class="btn-share" style="background: rgba(76,201,240,0.1); color: #4cc9f0; border-color: #4cc9f0;">View Details</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (dataP.success) {
+                    dataP.prescriptions.forEach(p => {
+                        html += `
+                            <div class="history-card">
+                                <span class="card-type type-prescription">Prescription</span>
+                                <h3>Dr. ${p.doctor_name || 'Consultant'}</h3>
+                                <p style="color: #94a3b8; font-size: 0.9rem;">Date: ${new Date(p.created_at).toLocaleDateString()}</p>
+                                <div style="margin-top: 1rem; font-style: italic;">
+                                    "${p.diagnosis || 'General Consultation'}"
+                                </div>
+                                <button onclick="shareRecord('prescription', ${p.prescription_id})" class="btn-share"><i class="fas fa-share-alt"></i> Order Medicines</button>
+                                <button onclick="openRecordViewer('prescription', ${JSON.stringify(p).replace(/"/g, '&quot;')})" class="btn-share" style="background: rgba(114,9,183,0.1); color: #7209b7; border-color: #7209b7;">View Prescription</button>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (html) {
+                    list.innerHTML = html;
+                    if (window.refreshTranslations) window.refreshTranslations();
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function openRecordViewer(type, data) {
+            const modal = document.getElementById('viewerModal');
+            const title = document.getElementById('viewerTitle');
+            const body = document.getElementById('viewerBody');
+
+            modal.style.display = 'flex';
+
+            if (type === 'report') {
+                title.innerText = 'Lab Report Details';
+                body.innerHTML = `
+                    <div style="font-family: var(--font-body);">
+                        <p class="mb-2"><strong>Test Type:</strong> ${data.report_type}</p>
+                        <p class="mb-2"><strong>Date:</strong> ${new Date(data.uploaded_at).toLocaleString()}</p>
+                        <hr class="mb-3" style="opacity: 0.2;">
+                        <div class="mb-4">
+                            <h4>Analysis Results:</h4>
+                            <p>${data.result || 'No details available'}</p>
+                        </div>
+                        ${data.file_path ? `<a href="/${data.file_path}" target="_blank" class="btn btn-primary btn-sm">Download Source File</a>` : ''}
+                    </div>
+                `;
+            } else {
+                title.innerText = 'Prescription Details';
+                body.innerHTML = `
+                    <div style="font-family: var(--font-body);">
+                        <p class="mb-2"><strong>Doctor:</strong> Dr. ${data.doctor_name}</p>
+                        <p class="mb-2"><strong>Specialization:</strong> ${data.specialization || 'Consultant'}</p>
+                        <p class="mb-2"><strong>Date:</strong> ${new Date(data.created_at).toLocaleString()}</p>
+                        <hr class="mb-3" style="opacity: 0.2;">
+                        <div class="mb-4">
+                            <h4>Diagnosis:</h4>
+                            <p>${data.diagnosis || 'N/A'}</p>
+                            <h4 class="mt-4">Medications:</h4>
+                            <div style="background: #eef2ff; padding: 1rem; border-radius: 8px; font-family: monospace; white-space: pre-wrap;">${data.prescription || 'N/A'}</div>
+                        </div>
+                        ${data.file_path ? `<a href="/${data.file_path}" target="_blank" class="btn btn-primary btn-sm">Download PDF</a>` : ''}
+                    </div>
+                `;
+            }
+        }
+
+        function closeViewer() {
+            document.getElementById('viewerModal').style.display = 'none';
+        }
+
+        function shareRecord(type, id) {
+            localStorage.setItem('share_type', type);
+            localStorage.setItem('share_id', id);
+            window.location.href = '/patient/order_medicines.html';
+        }
+
+        loadHistory();
+    </script>
+</body>
+
+</html>

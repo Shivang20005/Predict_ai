@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Signup - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.4)), url('/images/hs.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            background: transparent;
+        }
+
+        .auth-box {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 32px;
+            padding: 3rem;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+            animation: slideInScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .auth-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 50px 110px rgba(0, 0, 0, 0.35);
+        }
+
+        @keyframes slideInScale {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-input {
+            background: rgba(248, 250, 252, 0.8);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.85rem 1.2rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .auth-page-wrapper {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            background: rgba(15, 23, 42, 0.3);
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+            background: rgba(15, 23, 42, 0.5);
+            color: #4cc9f0;
+        }
+
+        .btn-register-submit {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-register-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-register-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Animated Doctor Styles */
+        .doctor-feedback-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1002;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .doctor-feedback-container.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .doctor-speech-bubble {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            position: relative;
+            max-width: 250px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1e293b;
+            border: 2px solid #6366f1;
+        }
+
+        .doctor-speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 40px;
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: white transparent transparent;
+        }
+
+        .doctor-img-animated {
+            height: 150px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+            animation: float-doctor 3s ease-in-out infinite;
+        }
+
+        @keyframes float-doctor {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .doctor-feedback-container.success .doctor-speech-bubble {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .doctor-feedback-container.error .doctor-speech-bubble {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .validation-message {
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            min-height: 1.25rem;
+            font-weight: 500;
+        }
+
+        .validation-message.error {
+            color: #ef4444;
+        }
+
+        .validation-message.success {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-page-wrapper">
+        <a href="/" class="back-home">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+
+        <div class="auth-container">
+            <div class="auth-box">
+                <a href="/" class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
+                    <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 60px;">
+                    <span style="font-size: 2rem;">PREDICT_AI</span>
+                </a>
+
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div
+                        style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; border-radius: 18px; margin: 0 auto; color: white; animation: pulse-glow 2s infinite;">
+                        🏥</div>
+                    <h1
+                        style="font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        Patient Registration</h1>
+                </div>
+
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-input" id="age" min="1" max="120" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-input" id="phone" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Aadhar Number</label>
+                        <input type="text" class="form-input" id="aadhar" maxlength="12" pattern="[0-9]{12}">
+                        <div id="aadhar-feedback" class="validation-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="email" required>
+                        <div id="email-feedback" class="validation-message"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" maxlength="15"
+                            placeholder="Max 15 characters" required>
+                    </div>
+
+                    <button type="submit" class="btn-register-submit">
+                        Create Account <i class="fas fa-user-plus"></i>
+                    </button>
+                </form>
+
+                <div style="text-align: center; margin-top: 2rem; color: var(--gray-600);">
+                    Already have an account? <a href="/patient/login.html"
+                        style="color: var(--primary); font-weight: 600; text-decoration: none;">Login Here</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Animated Doctor Component -->
+        <div id="doctorFeedback" class="doctor-feedback-container">
+            <div id="doctorSpeech" class="doctor-speech-bubble">
+                Hello! I am here to help you.
+            </div>
+            <img src="/images/doctor.png" alt="Doctor" class="doctor-img-animated">
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script src="/js/validator.js"></script>
+    <script>
+        const doctorFeedback = document.getElementById('doctorFeedback');
+        const doctorSpeech = document.getElementById('doctorSpeech');
+
+        function showDoctorFeedback(message, type = 'success') {
+            doctorSpeech.innerText = message;
+            doctorFeedback.className = 'doctor-feedback-container show ' + type;
+
+            // Remove after 5 seconds if success, keep if error
+            if (type === 'success') {
+                setTimeout(() => {
+                    doctorFeedback.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        const aadharInput = document.getElementById('aadhar');
+        const emailInput = document.getElementById('email');
+        const aadharFeedback = document.getElementById('aadhar-feedback');
+        const emailFeedback = document.getElementById('email-feedback');
+
+        function setValidationState(input, feedbackElement, isValid, message) {
+            feedbackElement.textContent = message;
+            if (isValid) {
+                input.style.borderColor = '#10b981';
+                feedbackElement.className = 'validation-message success';
+                if (!message) feedbackElement.textContent = '';
+            } else {
+                input.style.borderColor = '#ef4444';
+                feedbackElement.className = 'validation-message error';
+            }
+        }
+
+        function clearValidationState(input, feedbackElement) {
+            input.style.borderColor = '#e2e8f0';
+            feedbackElement.textContent = '';
+            feedbackElement.className = 'validation-message';
+        }
+
+        aadharInput.addEventListener('input', async (e) => {
+            const aadhar = e.target.value;
+            if (aadhar.length === 12) {
+                try {
+                    const response = await fetch(`/api/patient/check-aadhar/${aadhar}`);
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        setValidationState(aadharInput, aadharFeedback, false, data.message);
+                        showDoctorFeedback(data.message, 'error');
+                    } else {
+                        setValidationState(aadharInput, aadharFeedback, true, '');
+                    }
+                } catch (error) {
+                    console.error('Error checking Aadhar:', error);
+                }
+            } else {
+                clearValidationState(aadharInput, aadharFeedback);
+            }
+        });
+
+        emailInput.addEventListener('blur', async (e) => {
+            const email = e.target.value;
+            if (email && email.includes('@')) {
+                try {
+                    const response = await fetch('/api/patient/check-email', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const data = await response.json();
+
+                    if (data.exists) {
+                        setValidationState(emailInput, emailFeedback, false, data.message);
+                        showDoctorFeedback(data.message, 'error');
+                    } else {
+                        setValidationState(emailInput, emailFeedback, true, '');
+                    }
+                } catch (error) {
+                    console.error('Error checking Email:', error);
+                }
+            } else {
+                if (!email) clearValidationState(emailInput, emailFeedback);
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate Password
+            const password = document.getElementById('password').value;
+            const validationResult = Validator.validatePassword(password);
+            if (!validationResult.valid) {
+                showDoctorFeedback(validationResult.message, 'error');
+                return;
+            }
+
+            // Hide previous feedback
+            doctorFeedback.classList.remove('show');
+
+            const formData = {
+                name: document.getElementById('name').value,
+                age: parseInt(document.getElementById('age').value),
+                phone: document.getElementById('phone').value,
+                aadhar_number: document.getElementById('aadhar').value || null,
+                email: document.getElementById('email').value,
+                password: password
+            };
+
+            try {
+                const response = await fetch('/api/patient/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showDoctorFeedback(`Well done! Registration Successful! Your Patient ID is: ${data.patient_id}. Redirecting...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/patient/login.html';
+                    }, 4000);
+                } else {
+                    showDoctorFeedback('Oops! ' + (data.message || 'Error occurred'), 'error');
+                }
+            } catch (error) {
+                showDoctorFeedback('I encountered an error connecting to the server. Please try again.', 'error');
+            }
+        });
+    </script>
+</body>
+
+</html>

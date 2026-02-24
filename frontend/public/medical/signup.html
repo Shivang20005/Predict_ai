@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Registration - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .signup-container {
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .info-side {
+            padding: 3rem;
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+        }
+
+        .form-side {
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .logo-box img {
+            height: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.3);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(76, 201, 240, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .signup-container {
+                grid-template-columns: 1fr;
+            }
+
+            .info-side {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="signup-container">
+        <div class="info-side">
+            <div class="logo-box">
+                <img src="/images/logo.png" alt="Logo">
+                <span>PREDICT_AI</span>
+            </div>
+            <h1 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1.5rem;">Join the <br><span
+                    style="color: var(--primary);">Medical Network</span></h1>
+            <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 2rem;">Help patients get their medicines faster
+                with AI-integrated order management and prescription sharing.</p>
+            <div style="font-size: 4rem; text-align: center; animation: float 6s infinite ease-in-out;">💊</div>
+        </div>
+        <div class="form-side">
+            <h2 style="color: white; margin-bottom: 2rem;">Medical Registration</h2>
+            <form id="signupForm">
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label>Medical Shop Name</label>
+                        <input type="text" id="shop_name" placeholder="e.g. LifeCare Pharmacy" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Owner Name</label>
+                        <input type="text" id="owner_name" placeholder="Full Name" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+91 0000000000">
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="shop@email.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="input-group">
+                        <label>License Number</label>
+                        <input type="text" id="license" placeholder="Drug License No.">
+                    </div>
+                    <div class="input-group full-width">
+                        <label>Full Address</label>
+                        <textarea id="address" rows="3" placeholder="Enter complete address"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-register">Register Medical <i class="fas fa-arrow-right"></i></button>
+            </form>
+            <p style="text-align: center; margin-top: 1.5rem; color: #94a3b8;">Already have an account? <a
+                    href="/medical/login.html"
+                    style="color: var(--primary); text-decoration: none; font-weight: 600;">Login here</a></p>
+        </div>
+    </div>
+
+    <script src="/js/common.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                shop_name: document.getElementById('shop_name').value,
+                owner_name: document.getElementById('owner_name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                license_number: document.getElementById('license').value
+            };
+
+            try {
+                const res = await fetch('/api/medical/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Registration successful! Redirecting to login...');
+                    window.location.href = '/medical/login.html';
+                } else {
+                    alert('Registration failed: ' + data.message);
+                }
+            } catch (err) {
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+</body>
+
+</html>

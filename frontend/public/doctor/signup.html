@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Registration - PREDICT_AI</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        :root {
+            --medical-blue: #3b82f6;
+            --medical-dark: #1e3a8a;
+            --text-gray: #64748b;
+        }
+
+        body {
+            background: #f8fafc;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-banner {
+            height: 600px;
+            background: linear-gradient(rgba(30, 58, 138, 0.7), rgba(59, 130, 246, 0.6)), url('/images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding-bottom: 100px;
+            /* Space for overlap */
+        }
+
+        .hero-content h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            font-weight: 300;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+
+        /* Floating Content Wrapper */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: -150px auto 4rem;
+            /* Negative top margin for overlap */
+            padding: 0 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .split-card {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            background: white;
+            border-radius: 4px;
+            /* Sharper corners as per reference */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Left Column */
+        .info-side {
+            background: white;
+            padding: 4rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        .info-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-heading {
+            font-size: 2.5rem;
+            color: var(--medical-dark);
+            font-weight: 700;
+            /* Bold heading */
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .contact-info {
+            margin-top: auto;
+        }
+
+        .contact-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-value {
+            font-size: 1.5rem;
+            color: var(--medical-blue);
+            font-weight: 600;
+        }
+
+        /* Right Column (Form) */
+        .form-side {
+            padding: 4rem 3rem;
+            background: white;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            color: var(--medical-dark);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Clean Input Styles */
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            color: #334155;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            background: white;
+            border-color: var(--medical-blue);
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .btn-submit {
+            background: var(--medical-blue);
+            color: white;
+            width: 100%;
+            padding: 1.25rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--medical-dark);
+        }
+
+        @media (max-width: 900px) {
+            .split-card {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-banner {
+                height: 400px;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1>Caring For Life</h1>
+            <p>Leading the Way in Medical Excellence</p>
+        </div>
+    </div>
+
+    <!-- Floating Content -->
+    <div class="content-wrapper">
+        <div class="split-card">
+            <!-- Left Info Side -->
+            <div class="info-side">
+                <div>
+                    <div class="info-title">Global Reach</div>
+                    <div class="info-heading">Join Our Medical Network</div>
+                    <p style="color: #64748b; line-height: 1.8; margin-bottom: 3rem;">
+                        Connect with thousands of patients and manage your practice efficiently.
+                        Our AI-powered platform helps you focus on what matters most - patient care.
+                    </p>
+                </div>
+
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-label">Doctor Support Line</div>
+                        <div class="contact-value">+1-800-PREDICT-AI</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Technical Assistance</div>
+                        <div class="contact-value" style="font-size: 1rem; color: #64748b;">support@predictai.com</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Form Side -->
+            <div class="form-side">
+                <div class="form-header">
+                    <h2>Doctor Registration</h2>
+                </div>
+
+                <form id="signupForm">
+                    <div class="form-row">
+                        <input type="text" class="form-input" id="name" placeholder="Full Name *" required>
+                        <input type="tel" class="form-input" id="phone" placeholder="Phone Number *" required>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="email" class="form-input" id="email" placeholder="Email Address *" required>
+                        <select id="specialization" class="form-select" required>
+                            <option value="">Specialization *</option>
+                            <option value="General Physician">General Physician</option>
+                            <option value="Cardiologist">Cardiologist</option>
+                            <option value="Dermatologist">Dermatologist</option>
+                            <option value="Neurologist">Neurologist</option>
+                            <option value="Pediatrician">Pediatrician</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="text" class="form-input" id="hospital" placeholder="Hospital / Clinic *" required>
+                        <input type="number" class="form-input" id="fees" placeholder="Consultation Fees (₹) *"
+                            required>
+                    </div>
+
+                    <div class="form-row">
+                        <input type="text" class="form-input" id="license" placeholder="License Number *" required>
+                        <input type="number" class="form-input" id="age" placeholder="Age *" required min="25">
+                    </div>
+
+                    <div class="form-row">
+                        <input type="password" class="form-input" id="password" placeholder="Password *" required>
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="Confirm Password *"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="contact-label">Upload Degree (Optional)</label>
+                        <input type="file" class="form-input" id="degree" accept=".pdf,.jpg,.jpeg,.png">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Register Now</button>
+
+                    <div style="text-align: center; margin-top: 1.5rem; color: #64748b; font-size: 0.9rem;">
+                        Already registered? <a href="/doctor/login.html"
+                            style="color: var(--medical-blue); text-decoration: none; font-weight: 600;">Login Here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Need to keep the original script for functionality -->
+    <script src="/js/common.js"></script>
+    <script src="/js/validator.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate Password
+            const password = document.getElementById('password').value;
+            const validationResult = Validator.validatePassword(password);
+            if (!validationResult.valid) {
+                alert('Password Error: ' + validationResult.message);
+                return;
+            }
+
+            if (password !== document.getElementById('confirmPassword').value) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('specialization', document.getElementById('specialization').value);
+            formData.append('age', document.getElementById('age').value);
+            formData.append('hospital_name', document.getElementById('hospital').value);
+            formData.append('fees', document.getElementById('fees').value);
+            formData.append('phone', document.getElementById('phone').value);
+            formData.append('email', document.getElementById('email').value);
+            formData.append('password', document.getElementById('password').value);
+            formData.append('license_number', document.getElementById('license').value);
+
+            const degreeFile = document.getElementById('degree').files[0];
+            if (degreeFile) {
+                formData.append('degree', degreeFile);
+            }
+
+            try {
+                const response = await fetch('/api/doctor/signup', {
+                    method: 'POST',
+                    body: formData // No Content-Type header needed for FormData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Registration Successful! Please Login.');
+                    window.location.href = '/doctor/login.html';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred');
+            }
+        });
+    </script>
+</body>
+
+</html>
