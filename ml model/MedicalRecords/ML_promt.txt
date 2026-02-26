@@ -1,0 +1,40 @@
+I have given a task to make project of medical analysis whether the person s suffering from tuberculosis or not
+There are two  target values :  GeneXpert Test [], Chest X-ray Results,
+We use Function model API not sequential model
+M1 use GeneXpert Test as target value
+M2 use Chest X-ray Results as target value
+We need to use feature engineering to filter out irrelevant features like city etc 
+then use the remaining features to predict the output
+
+i need to make a function model using TensorFlow which predicts a person is suffering from TB( tuberculosis) if both models M1 and M2 predicts he is having TB  
+
+data has following features
+Patient ID                  0
+Age                         0
+Gender                      0
+Region                      0
+Occupation                  0
+Date of Diagnosis           0
+Symptoms                    0
+Sputum Smear Test           0
+GeneXpert Test              0
+Chest X-ray Results         0
+Treatment Start Date        0
+Treatment Type              0
+Duration of Treatment       0
+Drug Resistance             0
+Treatment Outcome           0
+Relapse                     0
+Mortality                   0
+Complications            4078
+Malnutrition                0
+Diabetes                    0
+HIV                         0
+Chronic Lung Disease        0
+Smoking Status              0
+Alcohol Consumption         0
+Living Conditions           0
+Access to Healthcare        0
+City                        0
+Region Code                 0
+dtype: int64
