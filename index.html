@@ -5,8 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PREDICT_AI - Future of Healthcare</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            --accent-glow: rgba(76, 201, 240, 0.3);
+        }
+
         #particle-canvas {
             position: fixed;
             top: 0;
@@ -15,62 +22,177 @@
             height: 100%;
             z-index: -1;
             pointer-events: none;
-            background: #ffffff;
+            background: linear-gradient(135deg, #a7f3d0 0%, #5eead4 50%, #38bdf8 100%);
         }
 
         /* Home Specific Overrides */
         .role-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
             color: #1e293b;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 320px;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .role-card:hover::before {
+            left: 100%;
         }
 
         .role-card:hover {
-            background: #f8fafc;
-            border-color: var(--home-accent-1);
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-15px) scale(1.02);
+            background: rgba(255, 255, 255, 0.6);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 0 20px var(--accent-glow);
+        }
+
+        .role-icon-wrapper {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 1.5rem;
+            border-radius: 24px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .role-card:hover .role-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 15px 30px rgba(76, 201, 240, 0.2);
+        }
+
+        .emoji-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 1.5rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce-subtle {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
         }
 
         .role-title {
             color: #0f172a;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1.6rem;
+            margin-bottom: 0.75rem;
+            font-family: var(--font-heading);
+            letter-spacing: -0.02em;
         }
 
         .role-description {
-            color: #64748b;
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .role-details {
+            margin-top: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .role-card:hover .role-details {
+            opacity: 1;
+        }
+
+        .detail-tag {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
             margin-top: 4rem;
         }
 
         .feature-item {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 2rem;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.5);
+            padding: 2.5rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
         }
 
         .feature-item:hover {
             background: #ffffff;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
         }
 
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--home-accent-1);
+        .home-page .logo-container span {
+            color: #0f172a !important;
+            text-shadow: none;
         }
+
+        .home-page .navbar {
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .home-page .navbar .btn-outline {
+            border-color: #0f172a !important;
+            color: #0f172a !important;
+        }
+
+        .home-page .navbar .lang-select {
+            color: #0f172a !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+    </style>
     </style>
 </head>
 
@@ -80,8 +202,8 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container navbar-flex">
-            <a href="/" class="logo-container">
-                <img src="/images/logo.png" alt="PREDICT_AI Logo" class="logo-img">
+            <a href="index.html" class="logo-container">
+                <img src="images/logo.png" alt="PREDICT_AI Logo" class="logo-img">
                 <span>PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1rem; align-items: center;">
@@ -89,8 +211,8 @@
                     <option value="en">English</option>
                     <option value="hi">हिंदी</option>
                 </select>
-                <a href="/patient/login.html" class="btn btn-outline">Login</a>
-                <a href="/patient/signup.html" class="btn btn-primary">Sign Up</a>
+                <a href="patient/login.html" class="btn btn-outline">Login</a>
+                <a href="patient/signup.html" class="btn btn-primary">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -127,38 +249,99 @@
             <!-- Role Cards -->
             <div id="roles" class="grid grid-3" style="margin-top: 3rem;">
                 <!-- Patient -->
-                <div class="role-card three-d-card" onclick="window.location.href='/patient/login.html'">
-                    <div class="role-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">🏥</div>
+                <div class="role-card three-d-card" onclick="window.location.href='patient/login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/100/hospital.png" alt="Patient Portal"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">🏥</span>
+                    </div>
                     <h3 class="role-title">Patient Portal</h3>
-                    <p class="role-description">AI Symptom Checker, Lab Uploads & Appointments</p>
+                    <p class="role-description">Your AI Healthcare Companion</p>
+                    <div class="role-details">
+                        <span class="detail-tag">🧠 AI Symptom Checker</span>
+                        <span class="detail-tag">📁 Lab Analysis</span>
+                        <span class="detail-tag">📅 Easy Booking</span>
+                    </div>
                 </div>
 
                 <!-- Doctor -->
-                <div class="role-card three-d-card" onclick="window.location.href='/doctor/login.html'">
-                    <div class="role-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">👨‍⚕️</div>
+                <div class="role-card three-d-card" onclick="window.location.href='doctor/login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/100/nurse-female.png" alt="Doctor Console"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">👩‍⚕️</span>
+                    </div>
                     <h3 class="role-title">Doctor Console</h3>
-                    <p class="role-description">Manage Patients, Prescriptions & Availability</p>
+                    <p class="role-description">Powering Clinical Excellence</p>
+                    <div class="role-details">
+                        <span class="detail-tag">📋 Patient Records</span>
+                        <span class="detail-tag">💊 Rx Generator</span>
+                        <span class="detail-tag">🕒 Schedule Mgr</span>
+                    </div>
                 </div>
 
                 <!-- Hospital -->
-                <div class="role-card three-d-card" onclick="window.location.href='/hospital/login.html'">
-                    <div class="role-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">🏩</div>
+                <div class="role-card three-d-card" onclick="window.location.href='hospital/login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/100/hospital-building.png" alt="Hospital Admin"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">🏢</span>
+                    </div>
                     <h3 class="role-title">Hospital Admin</h3>
-                    <p class="role-description">Staff Management & Laboratory Operations</p>
+                    <p class="role-description">Enterprise Scale Management</p>
+                    <div class="role-details">
+                        <span class="detail-tag">👥 Staff Control</span>
+                        <span class="detail-tag">🔬 Lab Operations</span>
+                        <span class="detail-tag">📈 Analytics</span>
+                    </div>
                 </div>
 
                 <!-- Medical Shop -->
-                <div class="role-card three-d-card" onclick="window.location.href='/medical/login.html'">
-                    <div class="role-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">💊</div>
+                <div class="role-card three-d-card" onclick="window.location.href='medical/login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/200/pill.png" alt="Medical Shop"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">💊</span>
+                    </div>
                     <h3 class="role-title">Medical Shop</h3>
-                    <p class="role-description">Manage Medicine Bookings & Prescriptions</p>
+                    <p class="role-description">Pharmacy Inventory & Orders</p>
+                    <div class="role-details">
+                        <span class="detail-tag">📦 Inventory</span>
+                        <span class="detail-tag">🧾 Prescription Hub</span>
+                        <span class="detail-tag">🚚 Home Delivery</span>
+                    </div>
+                </div>
+
+                <!-- Laboratory -->
+                <div class="role-card three-d-card" onclick="window.location.href='hospital/lab_login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/100/microscope.png" alt="Laboratory Portal"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">🔬</span>
+                    </div>
+                    <h3 class="role-title">Laboratory Portal</h3>
+                    <p class="role-description">Precision Diagnostics & Analysis</p>
+                    <div class="role-details">
+                        <span class="detail-tag">🧪 Sample Tracking</span>
+                        <span class="detail-tag">📊 Report Hub</span>
+                        <span class="detail-tag">🧬 DNA Sequencing</span>
+                    </div>
                 </div>
 
                 <!-- District Admin -->
-                <div class="role-card three-d-card" onclick="window.location.href='/admin/login.html'">
-                    <div class="role-icon" style="font-size: 4rem; margin-bottom: 1.5rem;">🏛️</div>
+                <div class="role-card three-d-card" onclick="window.location.href='admin/login.html'">
+                    <div class="role-icon-wrapper">
+                        <img src="https://img.icons8.com/bubbles/100/government.png" alt="District Portal"
+                            style="width: 80px; height: 80px;">
+                        <span class="emoji-badge">🏛️</span>
+                    </div>
                     <h3 class="role-title">District Portal</h3>
-                    <p class="role-description">Regional Oversight & Data Analytics</p>
+                    <p class="role-description">Regional Health Infrastructure</p>
+                    <div class="role-details">
+                        <span class="detail-tag">🌍 Public Health</span>
+                        <span class="detail-tag">📊 Disease Tracking</span>
+                        <span class="detail-tag">🛡️ Safety Oversight</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -197,7 +380,7 @@
         <p>&copy; 2026 PREDICT_AI Healthcare Systems. Pioneering the future of medicine.</p>
     </footer>
 
-    <script src="/js/common.js"></script>
+    <script src="js/common.js"></script>
     <script>
         // Removed 3D parallax and Tilt
 
@@ -206,14 +389,29 @@
         const ctx = canvas.getContext('2d');
         let particles = [];
 
-        // Healthcare symbols: Plus, Heart, Pill, Stethoscope, Test Tube, DNA
-        const symbols = ['✚', '♥', '💊', '🩺', '🧪', '🧬'];
-        const colors = [
-            'rgba(76, 201, 240, 0.6)', // Blue
-            'rgba(247, 37, 133, 0.6)', // Pink
-            'rgba(6, 214, 160, 0.6)', // Green
-            'rgba(114, 9, 183, 0.5)'  // Purple
+        const iconUrls = [
+            'https://img.icons8.com/bubbles/100/hospital.png',
+            'https://img.icons8.com/bubbles/100/pill.png',
+            'https://img.icons8.com/bubbles/100/stethoscope.png',
+            'https://img.icons8.com/bubbles/100/microscope.png',
+            'https://img.icons8.com/bubbles/100/dna-helix.png'
         ];
+
+        const images = [];
+        let loadedImages = 0;
+
+        iconUrls.forEach(url => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                loadedImages++;
+                if (loadedImages === iconUrls.length) {
+                    init();
+                    animate();
+                }
+            };
+            images.push(img);
+        });
 
         function resize() {
             canvas.width = window.innerWidth;
@@ -229,34 +427,30 @@
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 20 + 10; // Bigger for symbols
-                this.speedX = Math.random() * 0.5 - 0.25;
-                this.speedY = Math.random() * 0.5 - 0.25;
-                this.life = Math.random() * 100;
-                this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-                this.opacity = Math.random() * 0.5 + 0.1;
+                this.size = Math.random() * 40 + 20; // Size of icons
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.3 + 0.1;
+                this.img = images[Math.floor(Math.random() * images.length)];
                 this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.01;
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
                 this.rotation += this.rotationSpeed;
 
-                if (this.x < -50 || this.x > canvas.width + 50) this.speedX *= -1;
-                if (this.y < -50 || this.y > canvas.height + 50) this.speedY *= -1;
+                if (this.x < -50 || this.x > canvas.width + 50 ||
+                    this.y < -50 || this.y > canvas.height + 50) {
+                    this.reset();
+                }
             }
             draw() {
                 ctx.save();
+                ctx.globalAlpha = this.opacity;
                 ctx.translate(this.x, this.y);
                 ctx.rotate(this.rotation);
-                ctx.fillStyle = this.color;
-                ctx.font = `${this.size}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.globalAlpha = this.opacity;
-                ctx.fillText(this.symbol, 0, 0);
+                ctx.drawImage(this.img, -this.size / 2, -this.size / 2, this.size, this.size);
                 ctx.restore();
             }
         }
@@ -274,8 +468,6 @@
             });
             requestAnimationFrame(animate);
         }
-        init();
-        animate();
     </script>
 </body>
 

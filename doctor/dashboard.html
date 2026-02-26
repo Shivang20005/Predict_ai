@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,7 +30,7 @@
         /* Hero Section */
         .hero-banner {
             height: 350px;
-            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('/images/hospital.png');
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('../images/hospital.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -373,8 +373,8 @@
     <!-- Hero Section -->
     <div class="hero-banner">
         <div class="navbar-overlay">
-            <a href="/" class="brand-logo">
-                <img src="/images/logo.png" alt="Logo">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo">
                 <span class="brand-text">PREDICT_AI</span>
             </a>
 
@@ -399,7 +399,8 @@
                 <h1>Dr. <span id="docName">Doctor</span></h1>
                 <p>Dashboard & Appointment Manager</p>
             </div>
-            <a href="/doctor/patients.html" class="btn-manage">Manage Patients</a>
+            <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="patients.html" class="btn-manage">Manage Patients</a>
         </div>
 
         <div class="dashboard-grid">
@@ -484,10 +485,10 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/doctor/login.html';
+        if (!token) window.location.href = 'login.html';
 
         document.getElementById('docName').textContent = localStorage.getItem('doctorName');
         const initialStatus = localStorage.getItem('doctorStatus');

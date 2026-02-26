@@ -7,7 +7,7 @@
     <title>Hospital Login - PREDICT_AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%);
@@ -26,7 +26,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: url('/images/hospital.png') no-repeat center center/cover;
+            background: url('../images/hospital.png') no-repeat center center/cover;
             overflow: hidden;
         }
 
@@ -254,12 +254,12 @@
                             autocomplete="new-password">
                     </div>
                     <button type="submit" class="btn-login">Access Portal</button>
-                    <a href="/hospital/signup.html" class="btn-signup">Register New Hospital</a>
+                    <a href="signup.html" class="btn-signup">Register Institutional Account</a>
                     <a href="/hospital/lab_login.html" class="btn-signup"
                         style="margin-top: 1rem; background: rgba(14, 165, 233, 0.1); border-color: rgba(14, 165, 233, 0.3);">
                         <i class="fas fa-vial"></i> Lab Staff Login
                     </a>
-                    <a href="/" class="btn-signup"
+                    <a href="../index.html" class="btn-signup"
                         style="margin-top: 1rem; border-color: rgba(255,255,255,0.3); opacity: 0.8;">
                         <i class="fas fa-home"></i> Back to Home
                     </a>
@@ -270,8 +270,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="/js/common.js"></script>
-    <script src="/js/validator.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/validator.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -293,7 +293,7 @@
                     localStorage.setItem('role', 'hospital');
                     localStorage.setItem('hospitalName', data.hospital.hospital_name);
 
-                    window.location.href = '/hospital/dashboard.html';
+                    window.location.href = 'dashboard.html';
                 } else {
                     alert('Login failed: ' + data.message);
                 }

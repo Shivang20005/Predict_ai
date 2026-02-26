@@ -27,7 +27,7 @@ app.use('/api/notifications', require('./routes/notification.routes'));
 
 // Root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/public/index.html'));
+    res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 // Error handling middleware

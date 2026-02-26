@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Dashboard - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -189,7 +189,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-container" style="margin-bottom: 3rem;">
-            <img src="/images/logo.png" alt="Logo" class="logo-img">
+            <img src="../images/logo.png" alt="Logo" class="logo-img">
             <span style="color: white;">PREDICT_AI</span>
         </div>
         <a href="#" class="nav-item active"><i class="fas fa-th-large"></i> Dashboard</a>
@@ -298,7 +298,7 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
 
     <script>
         let selectedOrderId = null;
@@ -458,7 +458,7 @@
 
         function logout() {
             localStorage.clear();
-            window.location.href = '/medical/login.html';
+            window.location.href = 'login.html';
         }
 
         initDashboard();

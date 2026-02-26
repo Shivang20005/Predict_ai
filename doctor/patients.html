@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         :root {
             --medical-blue: #3b82f6;
@@ -30,7 +30,7 @@
         /* Hero Section (Consistent with Dashboard) */
         .hero-banner {
             height: 300px;
-            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('/images/hospital.png');
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('../images/hospital.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -335,8 +335,8 @@
     <!-- Hero Section -->
     <div class="hero-banner">
         <div class="navbar-overlay">
-            <a href="/" class="brand-logo">
-                <img src="/images/logo.png" alt="Logo">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo">
                 <span class="brand-text">PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1rem; align-items: center;">
@@ -345,9 +345,7 @@
                     <option value="en" style="color: black;">English</option>
                     <option value="hi" style="color: black;">हिंदी</option>
                 </select>
-                <a href="/doctor/dashboard.html" class="btn-back">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
             </div>
         </div>
     </div>
@@ -430,7 +428,7 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         const token = localStorage.getItem('token');
         let currentPatientId = null;

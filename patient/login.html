@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Login - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,7 +26,10 @@
         .auth-page-wrapper {
             width: 100%;
             min-height: 100vh;
-            background: var(--bg-gradient);
+            background: linear-gradient(rgba(99, 102, 241, 0.5), rgba(168, 85, 247, 0.5)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -235,7 +238,7 @@
 
 <body>
     <div class="auth-page-wrapper">
-        <a href="/" class="back-home">
+        <a href="../index.html" class="back-home">
             <i class="fas fa-arrow-left"></i>
             <span>Back to Home</span>
         </a>
@@ -243,13 +246,13 @@
         <div class="login-card-container">
             <!-- Professional Illustration Side -->
             <div class="illustration-side">
-                <img src="/images/medical_illustration_login.png" alt="Medical Illustration" class="illustration-img">
+                <img src="../images/medical_illustration_login.png" alt="Medical Illustration" class="illustration-img">
             </div>
 
             <!-- Login Form Side -->
             <div class="form-side">
-                <a href="/" class="logo-container">
-                    <img src="/images/logo.png" alt="Logo" class="logo-img">
+                <a href="../index.html" class="logo-container">
+                    <img src="../images/logo.png" alt="Logo" style="height: 60px; margin-bottom: 1rem;">
                     <span class="logo-text">PREDICT_AI</span>
                 </a>
 
@@ -275,14 +278,14 @@
                 </form>
 
                 <div class="signup-text">
-                    Don't have an account? <a href="/patient/signup.html" class="signup-link">Sign Up Now</a>
+                    Don't have an account? <a href="signup.html" class="signup-link">Sign Up Now</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
-    <script src="/js/validator.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/validator.js"></script>
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();

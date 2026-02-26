@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Signup - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -13,7 +13,7 @@
         body {
             margin: 0;
             padding: 0;
-            background-image: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.4)), url('/images/hs.jpeg');
+            background: linear-gradient(rgba(99, 102, 241, 0.5), rgba(168, 85, 247, 0.5)), url('../images/hospital.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -238,15 +238,15 @@
 
 <body>
     <div class="auth-page-wrapper">
-        <a href="/" class="back-home">
+        <a href="../index.html" class="back-home">
             <i class="fas fa-arrow-left"></i>
             <span>Back to Home</span>
         </a>
 
         <div class="auth-container">
             <div class="auth-box">
-                <a href="/" class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
-                    <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 60px;">
+                <a href="../index.html" class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
+                    <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 60px;">
                     <span style="font-size: 2rem;">PREDICT_AI</span>
                 </a>
 
@@ -300,7 +300,7 @@
                 </form>
 
                 <div style="text-align: center; margin-top: 2rem; color: var(--gray-600);">
-                    Already have an account? <a href="/patient/login.html"
+                    Already have an account? <a href="login.html"
                         style="color: var(--primary); font-weight: 600; text-decoration: none;">Login Here</a>
                 </div>
             </div>
@@ -311,12 +311,12 @@
             <div id="doctorSpeech" class="doctor-speech-bubble">
                 Hello! I am here to help you.
             </div>
-            <img src="/images/doctor.png" alt="Doctor" class="doctor-img-animated">
+            <img src="../images/doctor.png" alt="Doctor" class="doctor-img-animated">
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
-    <script src="/js/validator.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../js/validator.js"></script>
     <script>
         const doctorFeedback = document.getElementById('doctorFeedback');
         const doctorSpeech = document.getElementById('doctorSpeech');

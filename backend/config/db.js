@@ -2,6 +2,12 @@ const { Pool } = require('pg');
 require('dotenv').config();
 
 // Use connection string for Supabase
+if (!process.env.DATABASE_URL) {
+    console.error('❌ Error: DATABASE_URL is not defined in environment variables.');
+    console.error('👉 Please create a .env file in the backend directory and add your Supabase connection string.');
+    console.error('Example: DATABASE_URL=postgres://postgres:your-password@db.your-project.supabase.co:5432/postgres');
+}
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {

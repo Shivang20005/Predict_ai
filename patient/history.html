@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical History - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -94,8 +94,8 @@
 <body>
     <nav class="navbar">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="/" class="logo-container">
-                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
                 <span>PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1rem; align-items: center;">
@@ -103,7 +103,7 @@
                     <option value="en">English</option>
                     <option value="hi">हिंदी</option>
                 </select>
-                <a href="/patient/dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">
                     <i class="fas fa-arrow-left"></i> History
                 </a>
             </div>
@@ -140,7 +140,7 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         async function loadHistory() {
             const token = localStorage.getItem('token');

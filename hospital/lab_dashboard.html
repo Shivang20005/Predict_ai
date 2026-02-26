@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Staff Dashboard - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         .upload-card {
             background: var(--white);
@@ -35,8 +35,8 @@
 
     <nav class="navbar">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="/" class="logo-container">
-                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
                 <span>PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1rem; align-items: center;">
@@ -220,10 +220,10 @@
         }
     </style>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/hospital/lab_login.html';
+        if (!token) window.location.href = './lab_login.html';
 
         document.getElementById('staffName').textContent = localStorage.getItem('staffName') || 'Lab Staff';
 
@@ -413,7 +413,7 @@
             }
         }
 
-        function logout() { localStorage.clear(); window.location.href = '/hospital/lab_login.html'; }
+        function logout() { localStorage.clear(); window.location.href = 'lab_login.html'; }
     </script>
 </body>
 

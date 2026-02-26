@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -24,7 +24,7 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)), url('/images/hospital.png');
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)), url('../images/hospital.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -282,8 +282,8 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="/" class="logo-container">
-                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px; border-radius: 10px;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px; border-radius: 10px;">
                 <span>PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1.25rem; align-items: center;">
@@ -322,7 +322,7 @@
         <!-- Action Grid -->
         <main class="action-grid">
             <!-- Symptom Checker -->
-            <a href="/patient/symptoms.html" class="action-card card-symptoms three-d-card">
+            <a href="symptoms.html" class="action-card card-checker three-d-card">
                 <div class="card-icon-wrapper">
                     <i class="fas fa-stethoscope"></i>
                 </div>
@@ -336,7 +336,7 @@
             </a>
 
             <!-- Medical History -->
-            <a href="/patient/history.html" class="action-card card-lab three-d-card">
+            <a href="history.html" class="action-card card-lab three-d-card">
                 <div class="card-icon-wrapper">
                     <i class="fas fa-file-medical"></i>
                 </div>
@@ -349,7 +349,7 @@
             </a>
 
             <!-- Find a Doctor -->
-            <a href="/patient/doctors.html" class="action-card card-doctor three-d-card">
+            <a href="doctors.html" class="action-card card-doctor three-d-card">
                 <div class="card-icon-wrapper"
                     style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #16a34a;">
                     <i class="fas fa-user-md"></i>
@@ -364,7 +364,7 @@
             </a>
 
             <!-- Medicine Orders -->
-            <a href="/patient/medicine_orders.html" class="action-card card-doctor three-d-card">
+            <a href="medicine_orders.html" class="action-card card-doctor three-d-card">
                 <div class="card-icon-wrapper">
                     <i class="fas fa-pills"></i>
                 </div>
@@ -377,7 +377,7 @@
             </a>
 
             <!-- Lab Analysis -->
-            <a href="/patient/lab_reports.html" class="action-card card-lab three-d-card">
+            <a href="lab_reports.html" class="action-card card-lab three-d-card">
                 <div class="card-icon-wrapper">
                     <i class="fas fa-microscope"></i>
                 </div>
@@ -390,7 +390,7 @@
             </a>
 
             <!-- My Care -->
-            <a href="/patient/appointments.html" class="action-card card-appointments three-d-card">
+            <a href="appointments.html" class="action-card card-appointments three-d-card">
                 <div class="card-icon-wrapper">
                     <i class="fas fa-calendar-check"></i>
                 </div>
@@ -404,11 +404,11 @@
         </main>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         // Authentication check
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = '/patient/login.html';
+        if (!token) window.location.href = 'login.html';
 
         // Profile population
         const patientName = localStorage.getItem('patientName');
@@ -421,7 +421,7 @@
         // Logout function
         function logout() {
             localStorage.clear();
-            window.location.href = '/patient/login.html';
+            window.location.href = 'login.html';
         }
     </script>
 </body>

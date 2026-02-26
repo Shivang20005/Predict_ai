@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sidebar {
@@ -121,7 +121,7 @@
 <body>
     <div class="sidebar">
         <div class="logo-container" style="margin-bottom: 3rem;">
-            <img src="/images/logo.png" alt="Logo" style="height: 40px;">
+            <img src="../images/logo.png" alt="Logo" style="height: 40px;">
             <span>ADMIN</span>
         </div>
         <div class="nav-item active" onclick="showSection('overview')" data-i18n="overview">📊 Overview</div>
@@ -181,11 +181,11 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
 
     <script>
         const token = localStorage.getItem('adminToken');
-        if (!token) window.location.href = '/admin/login.html';
+        if (!token) window.location.href = 'login.html';
 
         async function fetchStats() {
             const res = await fetch('/api/admin/dashboard-stats', {
@@ -360,7 +360,7 @@
             }
         }
 
-        function logout() { localStorage.removeItem('adminToken'); window.location.href = '/admin/login.html'; }
+        function logout() { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; }
 
         fetchStats();
         fetchAnalytics();

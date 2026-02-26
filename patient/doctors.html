@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find a Doctor - PREDICT_AI</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
     <style>
         .grid-3 {
             display: grid;
@@ -154,7 +154,7 @@
         }
 
         body {
-            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)), url('/images/hospital.png');
+            background: linear-gradient(rgba(240, 249, 255, 0.9), rgba(224, 242, 254, 0.9)), url('../images/hospital.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -169,8 +169,8 @@
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="/" class="logo-container">
-                <img src="/images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
                 <span>PREDICT_AI</span>
             </a>
             <div style="display: flex; gap: 1rem; align-items: center;">
@@ -181,8 +181,7 @@
                 <input type="text" id="searchDoctor" placeholder="Search by name or specialization..."
                     data-i18n-placeholder="search_doctor_placeholder" class="form-input"
                     style="width: 300px; padding: 0.5rem 1rem;">
-                <a href="/patient/dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;"
-                    data-i18n="back">Back</a>
+                <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;" data-i18n="back">Back</a>
             </div>
         </div>
     </nav>
@@ -221,7 +220,7 @@
         </div>
     </div>
 
-    <script src="/js/common.js"></script>
+    <script src="../js/common.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', loadDoctors);
 
@@ -272,7 +271,7 @@
                 <div class="doctor-card">
                     <div class="doctor-image-container">
                         ${isAvailable ? `<div class="availability-badge" data-i18n="available_now">Available Now</div>` : ''}
-                        <img src="/images/doctor.png" alt="${doc.name}" class="doctor-img">
+                        <img src="../images/doctor.png" alt="${doc.name}" class="doctor-img">
                     </div>
                     
                     <div class="doctor-content">
