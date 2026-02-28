@@ -286,7 +286,9 @@
 
     <script src="../js/common.js"></script>
     <script src="../js/validator.js"></script>
-    <script>
+    <script type="module">
+        import { supabase } from '../js/supabase-config.js';
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -296,36 +298,36 @@
             // User requested validation on login too.
             const validationResult = Validator.validatePassword(password);
             if (!validationResult.valid) {
-                // We can either block or just warn. User said "required ho password set krne ke liye" -> mostly implies signup. 
-                // But also said "password wala function ... log in page dono mein ho jaaye".
-                // Strict interpretation: enforce check before sending request.
                 alert('Invalid Password Format: ' + validationResult.message);
                 return;
             }
 
             try {
-                const response = await fetch('/api/patient/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
                 });
 
-                const data = await response.json();
-
-                if (data.success) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('patientId', data.patient.patient_id);
-                    localStorage.setItem('patientName', data.patient.name);
-                    localStorage.setItem('patientPhone', data.patient.phone);
-                    localStorage.setItem('patientAddress', data.patient.address || 'Not Provided');
+                if (error) {
+                    if (error.message.includes('Email not confirmed') || error.message.includes('verify')) {
+                        alert('⚠️ Please verify your email first!\nWe sent a confirmation link to ' + email + '.\nPlease check your inbox/spam folder and click the link before logging in.');
+                    } else {
+                        alert('Login failed: ' + error.message);
+                    }
+                } else if (data.session) {
+                    const userMeta = data.user.user_metadata;
+                    // Keep compatibility with existing dashboard code
+                    localStorage.setItem('token', data.session.access_token);
+                    localStorage.setItem('patientId', data.user.id);
+                    localStorage.setItem('patientName', userMeta.name || email);
+                    localStorage.setItem('patientPhone', userMeta.phone || 'Not Provided');
+                    localStorage.setItem('patientAddress', userMeta.address || 'Not Provided');
                     localStorage.setItem('role', 'patient');
                     window.location.href = '/patient/dashboard.html';
-                } else {
-                    alert(data.message || 'Login failed');
                 }
             } catch (error) {
                 console.error(error);
-                alert('An error occurred');
+                alert('An error occurred connecting to Supabase.');
             }
         });
     </script>

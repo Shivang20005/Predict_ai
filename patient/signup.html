@@ -317,7 +317,9 @@
 
     <script src="../js/common.js"></script>
     <script src="../js/validator.js"></script>
-    <script>
+    <script type="module">
+        import { supabase } from '../js/supabase-config.js';
+
         const doctorFeedback = document.getElementById('doctorFeedback');
         const doctorSpeech = document.getElementById('doctorSpeech');
 
@@ -356,6 +358,8 @@
             feedbackElement.className = 'validation-message';
         }
 
+        // We can keep these api checks for uniqueness, or let Supabase handle email uniqueness. 
+        // We'll keep them as they provide nice real-time feedback before submit.
         aadharInput.addEventListener('input', async (e) => {
             const aadhar = e.target.value;
             if (aadhar.length === 12) {
@@ -416,31 +420,37 @@
             // Hide previous feedback
             doctorFeedback.classList.remove('show');
 
-            const formData = {
-                name: document.getElementById('name').value,
-                age: parseInt(document.getElementById('age').value),
-                phone: document.getElementById('phone').value,
-                aadhar_number: document.getElementById('aadhar').value || null,
-                email: document.getElementById('email').value,
-                password: password
-            };
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            const age = parseInt(document.getElementById('age').value);
+            const phone = document.getElementById('phone').value;
+            const aadhar_number = document.getElementById('aadhar').value || null;
 
             try {
-                const response = await fetch('/api/patient/signup', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                // Supabase Native Auth
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            name: name,
+                            age: age,
+                            phone: phone,
+                            aadhar_number: aadhar_number
+                        }
+                    }
                 });
-                const data = await response.json();
-                if (data.success) {
-                    showDoctorFeedback(`Well done! Registration Successful! Your Patient ID is: ${data.patient_id}. Redirecting...`, 'success');
+
+                if (error) {
+                    showDoctorFeedback('Oops! ' + error.message, 'error');
+                } else if (data.user) {
+                    showDoctorFeedback(`Registration successful! 📬 Please check your email (${email}) and click the verification link before logging in. Redirecting...`, 'success');
                     setTimeout(() => {
                         window.location.href = '/patient/login.html';
-                    }, 4000);
-                } else {
-                    showDoctorFeedback('Oops! ' + (data.message || 'Error occurred'), 'error');
+                    }, 6000);
                 }
             } catch (error) {
+                console.error(error);
                 showDoctorFeedback('I encountered an error connecting to the server. Please try again.', 'error');
             }
         });
