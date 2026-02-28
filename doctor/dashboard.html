@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --medical-blue: #3b82f6;
+            --medical-dark: #1e3a8a;
+            --text-gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-banner {
+            height: 350px;
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            color: white;
+            padding-top: 2rem;
+            position: relative;
+        }
+
+        /* Navbar inside Hero */
+        .navbar-overlay {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 20;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-logo img {
+            height: 45px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* Toggle Switch */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--success);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: var(--medical-blue);
+        }
+
+        /* Dashboard Content */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: -180px auto 3rem;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--medical-blue);
+        }
+
+        .doctor-info h1 {
+            color: #1e293b;
+            font-size: 1.8rem;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .doctor-info p {
+            color: var(--text-gray);
+            margin: 0;
+        }
+
+        .btn-manage {
+            background: white;
+            border: 2px solid var(--medical-blue);
+            color: var(--medical-blue);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-manage:hover {
+            background: var(--medical-blue);
+            color: white;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: #334155;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Appointment Items */
+        .appt-item {
+            padding: 1rem;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .appt-item h4 {
+            margin: 0 0 0.5rem 0;
+            color: #0f172a;
+        }
+
+        .appt-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-accept {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-reject {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-link {
+            background: var(--medical-blue);
+            color: white;
+            width: 100%;
+        }
+
+        /* Form Inputs */
+        .form-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--medical-blue);
+            background: #fff;
+        }
+
+        .btn-primary {
+            background: var(--medical-blue);
+            color: white;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--medical-dark);
+        }
+
+        /* Modal styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-banner {
+                height: 300px;
+            }
+
+            .content-wrapper {
+                margin-top: -100px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <div class="navbar-overlay">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo">
+                <span class="brand-text">PREDICT_AI</span>
+            </a>
+
+            <div class="nav-actions">
+                <div class="status-badge">
+                    <span id="statusText" style="font-size: 0.9rem;">Offline</span>
+                    <label class="switch">
+                        <input type="checkbox" id="statusToggle" onchange="toggleStatus()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <div class="doctor-info">
+                <h1>Dr. <span id="docName">Doctor</span></h1>
+                <p>Dashboard & Appointment Manager</p>
+            </div>
+            <a href="dashboard.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+            <a href="patients.html" class="btn-manage">Manage Patients</a>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Appointment Requests -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Appointment Requests</h3>
+                </div>
+                <div id="pendingList">
+                    <p class="text-gray">No pending requests.</p>
+                </div>
+            </div>
+
+            <!-- Upcoming Schedule -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title" style="color: var(--success);">Upcoming Schedule</h3>
+                </div>
+                <div id="acceptedList">
+                    <p class="text-gray">No upcoming appointments.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Search Patient -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Search Patient</h3>
+                </div>
+                <input type="text" id="searchQuery" class="form-input" placeholder="Enter Patient Name or ID">
+                <button class="btn-primary" onclick="searchPatient()">Search Patient</button>
+            </div>
+
+            <!-- Settings -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3 class="card-title">Settings</h3>
+                </div>
+                <label style="display: block; margin-bottom: 0.5rem; color: #64748b; font-size: 0.9rem;">Update Hospital
+                    Name</label>
+                <div style="display: flex; gap: 1rem;">
+                    <input type="text" id="hospitalInput" class="form-input" placeholder="New Hospital Name"
+                        style="margin-bottom: 0;">
+                    <button class="btn-primary" onclick="updateHospital()"
+                        style="width: auto; padding: 0 1.5rem;">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meet Modal -->
+    <div id="meetModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="margin: 0; color: var(--medical-dark);">Share Meeting Details</h3>
+                <span onclick="closeMeetModal()"
+                    style="cursor: pointer; font-size: 1.5rem; color: #94a3b8;">&times;</span>
+            </div>
+
+            <p style="margin-bottom: 1rem; color: var(--text-gray);">For Patient: <strong id="modalPatientName"
+                    style="color: #334155;"></strong></p>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #64748b;">Meeting
+                    Link</label>
+                <input type="url" id="meetLink" class="form-input" placeholder="https://meet.google.com/..." required>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #64748b;">Meeting
+                    Time</label>
+                <input type="datetime-local" id="meetingTime" class="form-input" required>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #64748b;">Notes</label>
+                <textarea id="meetNotes" class="form-input" rows="3" style="resize: vertical;"></textarea>
+            </div>
+
+            <button class="btn-primary" onclick="submitMeetDetails()">Send Details</button>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        document.getElementById('docName').textContent = localStorage.getItem('doctorName');
+        const initialStatus = localStorage.getItem('doctorStatus');
+        const toggle = document.getElementById('statusToggle');
+        toggle.checked = initialStatus === 'available';
+        updateStatusText(toggle.checked);
+        loadAppointments();
+
+        function updateStatusText(isChecked) {
+            const text = document.getElementById('statusText');
+            text.textContent = isChecked ? 'Online' : 'Offline';
+            text.style.color = isChecked ? '#10b981' : '#cbd5e1'; // Green : Light Gray
+        }
+
+        async function toggleStatus() {
+            const isChecked = document.getElementById('statusToggle').checked;
+            updateStatusText(isChecked);
+            try {
+                await fetch('/api/doctor/availability', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ availability_status: isChecked ? 'available' : 'not_available' })
+                });
+                localStorage.setItem('doctorStatus', isChecked ? 'available' : 'not_available');
+            } catch (e) { console.error(e); alert('Failed to update status'); }
+        }
+
+        async function loadAppointments() {
+            const pendingList = document.getElementById('pendingList');
+            const acceptedList = document.getElementById('acceptedList');
+            try {
+                const response = await fetch('/api/doctor/appointments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const pending = data.appointments.filter(a => a.status === 'pending');
+                    const accepted = data.appointments.filter(a => a.status === 'accepted');
+
+                    if (pending.length > 0) {
+                        pendingList.innerHTML = '';
+                        pending.forEach(a => pendingList.innerHTML += createPendingCard(a));
+                    }
+
+                    if (accepted.length > 0) {
+                        acceptedList.innerHTML = '';
+                        accepted.forEach(a => acceptedList.innerHTML += createAcceptedCard(a));
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function createPendingCard(appt) {
+            return `
+                <div class="appt-item" style="border-left: 4px solid var(--warning);">
+                    <h4>${appt.patient_name} <span style="font-size: 0.85rem; color: #64748b; font-weight: 400;">(Age: ${appt.age})</span></h4>
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #64748b;">${appt.notes || 'No notes'}</p>
+                    <div class="appt-actions">
+                        <button class="btn-action btn-accept" onclick="respondAppt('${appt.appointment_id}', 'accept')">Accept</button>
+                        <button class="btn-action btn-reject" onclick="respondAppt('${appt.appointment_id}', 'reject')">Reject</button>
+                    </div>
+                </div>`;
+        }
+
+        function createAcceptedCard(appt) {
+            return `
+                <div class="appt-item" style="border-left: 4px solid var(--success);">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>${appt.patient_name}</h4>
+                        <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: ${appt.payment_status === 'completed' ? '#dcfce7' : '#fef3c7'}; color: ${appt.payment_status === 'completed' ? '#166534' : '#b45309'};">
+                            ${appt.payment_status === 'completed' ? 'PAID' : 'UNPAID'}
+                        </span>
+                    </div>
+                    <button class="btn-action btn-link" style="margin-top: 0.5rem;" onclick="openMeetModal('${appt.appointment_id}', '${appt.patient_name}')">
+                        <i class="fas fa-video"></i> Share Meeting Link
+                    </button>
+                </div>`;
+        }
+
+        async function respondAppt(id, action) {
+            if (!confirm(`Confirm ${action}?`)) return;
+            try {
+                await fetch(`/api/doctor/appointment/${id}/${action}`, {
+                    method: 'PUT', headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadAppointments();
+            } catch (e) { alert('Action failed'); }
+        }
+
+        let currentModalApptId = null;
+        function openMeetModal(id, name) {
+            currentModalApptId = id;
+            document.getElementById('modalPatientName').textContent = name;
+
+            // Auto-generate Jitsi Meet link (More reliable, no API key required)
+            const randomCode = 'PredictAI-' + Math.random().toString(36).substring(2, 10);
+            document.getElementById('meetLink').value = `https://meet.jit.si/${randomCode}`;
+
+            // Set default time
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + 20);
+
+            const toLokaleISO = (date) => {
+                const offset = date.getTimezoneOffset() * 60000;
+                return new Date(date - offset).toISOString().slice(0, 16);
+            };
+
+            document.getElementById('meetingTime').value = toLokaleISO(now);
+            document.getElementById('meetModal').style.display = 'flex';
+        }
+        function closeMeetModal() { document.getElementById('meetModal').style.display = 'none'; }
+
+        async function submitMeetDetails() {
+            const link = document.getElementById('meetLink').value;
+            const time = document.getElementById('meetingTime').value;
+            const notes = document.getElementById('meetNotes').value;
+
+            if (!link || !time) {
+                alert('Please provide both link and time');
+                return;
+            }
+
+            try {
+                await fetch(`/api/doctor/appointment/${currentModalApptId}/share-details`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        meet_link: link,
+                        meeting_time: time,
+                        notes: notes
+                    })
+                });
+                alert('Details Sent Successfully!'); closeMeetModal(); loadAppointments();
+            } catch (e) { alert('Failed'); }
+        }
+        function searchPatient() {
+            const query = document.getElementById('searchQuery').value;
+            if (query) window.location.href = `/doctor/patients.html?q=${query}`;
+        }
+        async function updateHospital() {
+            const name = document.getElementById('hospitalInput').value;
+            if (!name) return;
+            try {
+                await fetch('/api/doctor/hospital', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ hospital_name: name })
+                });
+                alert('Hospital updated!');
+            } catch (e) { console.error(e); }
+        }
+        function logout() { localStorage.clear(); window.location.href = '/doctor/login.html'; }
+
+        // Close modal on outside click
+        window.onclick = function (event) {
+            const modal = document.getElementById('meetModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+
+</html>

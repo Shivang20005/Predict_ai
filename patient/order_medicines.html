@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Medicines - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: #0f172a;
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .medical-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .medical-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+
+        .medical-card:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .btn-order {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .booking-summary {
+            background: rgba(99, 102, 241, 0.15);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px dashed var(--primary);
+            display: none;
+            /* Shown if sharing from history */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+                    <i class="fas fa-arrow-left"></i> Order Medicines
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="shareSummary" class="booking-summary">
+            <i class="fas fa-info-circle"></i> Sharing <strong><span id="recordType"></span></strong> with the medical
+            shop to help them fulfill your order.
+        </div>
+
+        <header>
+            <h1 data-i18n="order_medicines">Local Medical Shops</h1>
+            <p style="color: #94a3b8;">Select a verified pharmacy to place your order.</p>
+        </header>
+
+        <div id="medicalList" class="medical-list">
+            <!-- Loaded via JS -->
+            <div style="text-align: center; color: #94a3b8;">Searching for medical shops...</div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const shareType = localStorage.getItem('share_type');
+        const shareId = localStorage.getItem('share_id');
+
+        if (shareType && shareId) {
+            document.getElementById('shareSummary').style.display = 'block';
+            document.getElementById('recordType').innerText = shareType === 'report' ? 'Lab Report' : 'Prescription';
+            loadSharedContent();
+        }
+
+        async function loadSharedContent() {
+            try {
+                const endpoint = shareType === 'report' ? `/api/patient/report/${shareId}` : `/api/patient/prescription/${shareId}`;
+                const res = await fetch(endpoint, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const record = shareType === 'report' ? data.report : data.prescription;
+                    const details = shareType === 'report'
+                        ? `(Type: ${record.report_type}, Result: ${record.result})`
+                        : `(Doctor: Dr. ${record.doctor_name}, Diagnosis: ${record.diagnosis})`;
+                    document.getElementById('recordType').innerHTML += ` <span style="font-weight: normal; font-size: 0.9rem; color: #94a3b8;">${details}</span>`;
+                }
+            } catch (err) { console.error('Error loading shared content:', err); }
+        }
+
+        async function loadMedicals() {
+            try {
+                const res = await fetch('/api/medical/list', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const list = document.getElementById('medicalList');
+                    list.innerHTML = data.medicals.map(m => `
+                        <div class="medical-card">
+                            <div>
+                                <h3 style="margin: 0; font-size: 1.3rem;">${m.shop_name}</h3>
+                                <p style="color: #94a3b8; margin: 0.5rem 0 0;">${m.address}</p>
+                            </div>
+                            <button onclick="placeOrder(${m.medical_id}, '${m.shop_name}')" class="btn-order">Order Now</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function placeOrder(medicalId, shopName) {
+            const notes = prompt(`Any special instructions for ${shopName}? (Optional)`);
+
+            let patientPhone = localStorage.getItem('patientPhone');
+            let patientAddress = localStorage.getItem('patientAddress');
+            let patientName = localStorage.getItem('patientName');
+
+            if (!patientName) {
+                patientName = prompt('Please enter your name:');
+                if (patientName) localStorage.setItem('patientName', patientName);
+            }
+
+            if (!patientPhone || patientPhone === 'null' || patientPhone === 'undefined') {
+                patientPhone = prompt('Please enter your phone number:');
+                if (patientPhone) localStorage.setItem('patientPhone', patientPhone);
+            }
+            if (!patientAddress || patientAddress === 'null' || patientAddress === 'undefined') {
+                patientAddress = prompt('Please enter your delivery address:');
+                if (patientAddress) localStorage.setItem('patientAddress', patientAddress);
+            }
+
+            if (!patientPhone || !patientAddress) return alert('Phone and Address are required to place an order.');
+
+            // Show processing alert
+            alert('Processing your order... Please wait.');
+
+            const orderData = {
+                medical_id: medicalId,
+                patient_name: patientName,
+                phone: patientPhone,
+                address: patientAddress,
+                prescription_id: shareType === 'prescription' ? shareId : null,
+                report_id: shareType === 'report' ? shareId : null,
+                notes: notes
+            };
+
+            try {
+                console.log('Sending order data:', orderData);
+                const res = await fetch('/api/medical/book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/patient/login.html';
+                    return;
+                }
+
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Order Sent Successfully! You can track it in the "My Orders" section.');
+                    localStorage.removeItem('share_type');
+                    localStorage.removeItem('share_id');
+                    window.location.href = '/patient/dashboard.html';
+                } else {
+                    alert('Failed to place order: ' + (data.message || 'Unknown error'));
+                    console.error('Order failure:', data);
+                }
+            } catch (err) {
+                console.error('Network Error:', err);
+                alert('Network Error: Could not connect to server. Please try again.');
+            }
+        }
+
+        loadMedicals();
+    </script>
+</body>
+
+</html>

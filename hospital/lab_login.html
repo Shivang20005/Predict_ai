@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Staff Login - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="/css/login-animation.css">
+</head>
+
+<body>
+    <div class="auth-page-wrapper" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);">
+        <a href="/" class="back-home"><span>←</span><span>Back to Home</span></a>
+
+        <div class="sync-move-wrapper">
+            <!-- Character Animation Container -->
+            <div class="character-box">
+                <svg class="character-svg" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M30 40 Q50 20 70 40 L70 60 Q50 70 30 60 Z" fill="#3D2317" />
+                    <g class="head-group">
+                        <circle cx="50" cy="45" r="16" fill="#FFDBAC" />
+                        <path d="M34 40 Q50 25 66 40 Q66 30 50 30 Q34 30 34 40" fill="#4B2C20" />
+                        <circle class="eye" cx="44" cy="45" r="1.5" fill="#333" />
+                        <circle class="eye" cx="56" cy="45" r="1.5" fill="#333" />
+                        <path d="M46 52 Q50 55 54 52" fill="none" stroke="#A0522D" stroke-width="1"
+                            stroke-linecap="round" />
+                    </g>
+                    <rect x="40" y="60" width="20" height="35" rx="8" fill="#FFD700" />
+                    <g class="leg leg-left">
+                        <rect x="42" y="92" width="8" height="28" rx="4" fill="#1E90FF" />
+                        <rect x="40" y="118" width="12" height="6" rx="3" fill="#FFF" />
+                    </g>
+                    <g class="leg leg-right">
+                        <rect x="50" y="92" width="8" height="28" rx="4" fill="#1E90FF" />
+                        <rect x="50" y="118" width="12" height="6" rx="3" fill="#FFF" />
+                    </g>
+                    <g class="arm arm-front">
+                        <rect x="58" y="65" width="28" height="8" rx="4" fill="#FFDBAC" />
+                    </g>
+                </svg>
+            </div>
+
+            <div class="auth-box-wrapper">
+                <div class="auth-box glass-effect">
+                    <a href="/" class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
+                        <img src="../images/logo.png" alt="Logo" style="height: 50px; margin-bottom: 1rem;">
+                        <span style="font-size: 2rem; color: #00b09b;">PREDICT_AI</span>
+                    </a>
+
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse-glow 2s infinite;">🔬</div>
+                        <h1 style="color: #00b09b;">Lab Staff Login</h1>
+                        <p class="text-secondary">Access Laboratory Console</p>
+                    </div>
+
+                    <form id="loginForm" autocomplete="off">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" id="email" class="form-input" autocomplete="new-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="password" class="form-input" autocomplete="new-password"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full"
+                            style="background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); border: none;">Login</button>
+                    </form>
+
+                    <div class="auth-footer mt-4 text-center">
+                        New Staff? <a href="/hospital/lab_signup.html" style="color: #00b09b;">Register Here</a>
+                    </div>
+                    <div class="text-center mt-2">
+                        <a href="/hospital/login.html" class="text-secondary"
+                            style="text-decoration: none; font-size: 0.9rem;">Go to Admin Login →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="../js/common.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/hospital/lab-staff/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('staffName', data.staff.name);
+                    localStorage.setItem('role', 'lab_staff');
+                    window.location.href = '/hospital/lab_dashboard.html';
+                } else { alert(data.message); }
+            } catch (error) { alert('Login Error'); }
+        });
+    </script>
+</body>
+
+</html>

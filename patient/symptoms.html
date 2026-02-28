@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Checker - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .container {
+            max-width: 800px;
+            padding-top: 2rem;
+        }
+
+        .symptom-input-area {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 2rem;
+        }
+
+        .tags-input {
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            padding: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 50px;
+            background: var(--white);
+        }
+
+        .tag {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .tag-close {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tags-input input {
+            border: none;
+            outline: none;
+            padding: 0.5rem;
+            flex: 1;
+            font-size: 1rem;
+            min-width: 150px;
+        }
+
+        .common-symptoms {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .symptom-chip {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .symptom-chip:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .result-card {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.5s ease;
+            text-align: center;
+        }
+
+        .severity-indicator {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        .severity-low {
+            background: #d1fae5;
+            color: #10b981;
+        }
+
+        .severity-medium {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+
+        .severity-high {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+
+        .recommendation-box {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;"
+                    data-i18n="back_to_dashboard">Back to
+                    Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="symptom-input-area">
+            <h2 class="mb-3" data-i18n="ai_diagnosis_title">Symptom Checker & AI Diagnosis</h2>
+            <p class="mb-4 text-secondary" data-i18n="ai_diagnosis_subtitle">Enter your details and symptoms for an
+                AI-powered prediction.</p>
+
+            <div class="row" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Age</label>
+                    <input type="number" id="ageInput" class="form-control" placeholder="Age"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Gender</label>
+                    <select id="genderInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Sputum Smear Test</label>
+                    <select id="sputumSmearInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="Negative">Negative</option>
+                        <option value="Positive">Positive</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Disease Duration (Months)</label>
+                    <input type="number" id="durationInput" class="form-control" placeholder="Months" value="0"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                </div>
+            </div>
+
+            <div class="row" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Diabetes</label>
+                    <select id="diabetesInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>HIV Status</label>
+                    <select id="hivInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Malnutrition</label>
+                    <select id="malnutritionInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Smoking Status</label>
+                    <select id="smokingInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="Non-smoker">Non-smoker</option>
+                        <option value="Ex-smoker">Ex-smoker</option>
+                        <option value="Smoker">Smoker</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Alcohol Consumption</label>
+                    <select id="alcoholInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="Non-drinker">Non-drinker</option>
+                        <option value="Ex-drinker">Ex-drinker</option>
+                        <option value="Drinker">Drinker</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Chronic Lung Disease</label>
+                    <select id="lungDiseaseInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="No">No</option>
+                        <option value="Yes">Yes</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Living Conditions</label>
+                    <select id="livingConditionsInput" class="form-control"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                        <option value="Average">Average</option>
+                        <option value="Poor">Poor</option>
+                        <option value="Rich">Rich</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label>Region Code</label>
+                    <input type="number" id="regionCodeInput" class="form-control" placeholder="Code" value="39"
+                        style="width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid #ccc;">
+                </div>
+            </div>
+
+            <label>Symptoms (Select all that apply)</label>
+            <div class="common-symptoms">
+                <span class="symptom-chip" onclick="addSymptom('Sputum')">Sputum</span>
+                <span class="symptom-chip" onclick="addSymptom('Evening Fever')">Evening Fever</span>
+                <span class="symptom-chip" onclick="addSymptom('Weight Loss')">Weight Loss</span>
+                <span class="symptom-chip" onclick="addSymptom('Loss of Appetite')">Loss of Appetite</span>
+                <span class="symptom-chip" onclick="addSymptom('Night Sweats')">Night Sweats</span>
+                <span class="symptom-chip" onclick="addSymptom('Dry Cough')">Dry Cough</span>
+                <span class="symptom-chip" onclick="addSymptom('Chest Pain')">Chest Pain</span>
+                <span class="symptom-chip" onclick="addSymptom('Mild Fever')">Mild Fever</span>
+            </div>
+
+            <div class="form-group mt-3">
+                <div class="tags-input" id="tagsInput">
+                    <input type="text" id="symptomInput" placeholder="Type other symptoms and press Enter...">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-full mt-4" onclick="analyzeSymptoms()" style="width: 100%;">
+                Analyze for Tuberculosis
+            </button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultCard" class="result-card" style="max-width: 1000px; margin: 2rem auto; width: 100%;">
+            <h2 class="mb-4" style="text-align: center; color: var(--primary);">Analysis Report</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem; text-align: left;">
+                <!-- Column 1: Symptoms -->
+                <div style="background: var(--gray-100); padding: 1.5rem; border-radius: 15px;">
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-list-ul"></i> Symptoms</h4>
+                    <div id="resultSymptoms" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Column 2: Prediction -->
+                <div style="background: var(--gray-100); padding: 1.5rem; border-radius: 15px; text-align: center;">
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-stethoscope"></i> Prediction</h4>
+                    <div id="severityIcon" class="severity-indicator" style="margin: 0 auto 1rem;">?</div>
+                    <h3 id="diseaseName" style="margin-bottom: 0.5rem;">Detecting...</h3>
+                    <span id="severityText" class="badge">Severity: Unknown</span>
+                </div>
+
+                <!-- Column 3: Actions -->
+                <div style="background: var(--gray-100); padding: 1.5rem; border-radius: 15px;">
+                    <h4 style="margin-bottom: 1rem;"><i class="fas fa-hand-holding-medical"></i> Recommendation</h4>
+                    <p id="recommendationText" style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                        Please consult a doctor for further evaluation.
+                    </p>
+                    <div id="doctorAction">
+                        <a href="doctors.html" class="btn btn-primary"
+                            style="width: 100%; display: block; text-align: center; text-decoration: none;"
+                            data-i18n="find_doctor">Find a Doctor</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const symptoms = new Set();
+        const input = document.getElementById('symptomInput');
+
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSymptom(this.value);
+                this.value = '';
+            }
+        });
+
+        function addSymptom(text) {
+            text = text.trim();
+            if (text && !symptoms.has(text)) {
+                symptoms.add(text);
+                renderTags();
+            }
+        }
+
+        function removeSymptom(text) {
+            symptoms.delete(text);
+            renderTags();
+        }
+
+        function renderTags() {
+            const container = document.getElementById('tagsInput');
+            // Remove existing tags but keep input
+            Array.from(container.getElementsByClassName('tag')).forEach(el => el.remove());
+
+            symptoms.forEach(text => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = `${text} <span class="tag-close" onclick="removeSymptom('${text}')">&times;</span>`;
+                container.insertBefore(tag, input);
+            });
+        }
+
+        function toggleOtherOccupation(value) {
+            const otherInput = document.getElementById('otherOccupationInput');
+            otherInput.style.display = value === 'Other' ? 'block' : 'none';
+        }
+
+        async function analyzeSymptoms() {
+            const token = localStorage.getItem('token');
+
+            // Show loading
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = 'Analyzing...';
+            btn.disabled = true;
+
+            const age = document.getElementById('ageInput').value;
+            const gender = document.getElementById('genderInput').value;
+            const sputumSmear = document.getElementById('sputumSmearInput').value;
+            const duration = document.getElementById('durationInput').value;
+            const diabetes = document.getElementById('diabetesInput').value;
+            const hiv = document.getElementById('hivInput').value;
+            const malnutrition = document.getElementById('malnutritionInput').value;
+            const smoking = document.getElementById('smokingInput').value;
+            const alcohol = document.getElementById('alcoholInput').value;
+            const lungDisease = document.getElementById('lungDiseaseInput').value;
+            const livingConditions = document.getElementById('livingConditionsInput').value;
+            const regionCode = document.getElementById('regionCodeInput').value;
+
+            if (!age) {
+                alert("Please enter your age.");
+                btn.textContent = originalText;
+                btn.disabled = false;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/patient/predict-symptom', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        Symptoms: Array.from(symptoms).join(', '),
+                        Age: parseInt(age),
+                        Gender: gender,
+                        "Sputum Smear Test": sputumSmear,
+                        "disease_duration_months": parseFloat(duration),
+                        "Diabetes": diabetes,
+                        "HIV": hiv,
+                        "Malnutrition": malnutrition,
+                        "Smoking Status": smoking,
+                        "Alcohol Consumption": alcohol,
+                        "Chronic Lung Disease": lungDisease,
+                        "Living Conditions": livingConditions,
+                        "Region Code": parseInt(regionCode)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.treatment_type) {
+                    showResult(data);
+                } else {
+                    alert('Analysis failed: ' + (data.message || data.error));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function showResult(analysis) {
+            const card = document.getElementById('resultCard');
+            const icon = document.getElementById('severityIcon');
+            const text = document.getElementById('diseaseName');
+            const sevText = document.getElementById('severityText');
+            const rec = document.getElementById('recommendationText');
+            const symptomsList = document.getElementById('resultSymptoms');
+
+            // Render entered symptoms in the first column
+            symptomsList.innerHTML = Array.from(symptoms).map(s => `
+                <span class="symptom-chip" style="font-size: 0.8rem; padding: 0.3rem 0.8rem; background: var(--white); cursor: default;">${s}</span>
+            `).join('');
+
+            card.style.display = 'block';
+            text.textContent = analysis.treatment_type;
+
+            // Adjust severity based on risk
+            const risk = analysis.risk_level.toLowerCase();
+            icon.className = 'severity-indicator severity-' + (risk === 'high' ? 'high' : (risk === 'moderate' ? 'medium' : 'low'));
+
+            if (risk === 'low') {
+                icon.textContent = '😊';
+                sevText.style.background = '#10b981';
+                sevText.textContent = 'Risk Level: Low';
+                document.getElementById('doctorAction').style.display = 'none';
+            } else if (risk === 'moderate') {
+                icon.textContent = '😐';
+                sevText.style.background = '#f59e0b';
+                sevText.textContent = 'Risk Level: Moderate';
+                document.getElementById('doctorAction').style.display = 'block';
+            } else {
+                icon.textContent = '😷';
+                sevText.style.background = '#ef4444';
+                sevText.textContent = 'Risk Level: High';
+                document.getElementById('doctorAction').style.display = 'block';
+            }
+
+            sevText.style.color = 'white';
+            sevText.className = 'badge';
+            rec.textContent = analysis.recommendation;
+
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+
+</html>

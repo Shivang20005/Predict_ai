@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management - PREDICT_AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        :root {
+            --medical-blue: #3b82f6;
+            --medical-dark: #1e3a8a;
+            --text-gray: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section (Consistent with Dashboard) */
+        .hero-banner {
+            height: 300px;
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            color: white;
+            padding-top: 2rem;
+            position: relative;
+        }
+
+        .navbar-overlay {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 20;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-logo img {
+            height: 40px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-back:hover {
+            background: white;
+            color: var(--medical-blue);
+        }
+
+        /* Floating Content Wrapper */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: -150px auto 3rem;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Search Card */
+        .search-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            border-color: var(--medical-blue);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-search {
+            background: var(--medical-blue);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-search:hover {
+            background: var(--medical-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Layout Grid */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 2.5fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            color: #1e293b;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Patient List Items */
+        .patient-list-item {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+
+        .patient-list-item:hover {
+            background: #f8fafc;
+            transform: translateX(5px);
+        }
+
+        .patient-list-item h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--medical-blue);
+            font-size: 1.1rem;
+        }
+
+        .patient-meta {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        /* Detail View Styles */
+        .detail-header {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-header h2 {
+            font-size: 2rem;
+            color: var(--medical-dark);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .prescription-form {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--medical-blue);
+        }
+
+        .btn-save {
+            background: var(--medical-blue);
+            color: white;
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background: var(--medical-dark);
+        }
+
+        /* Timeline and Reports */
+        .history-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .timeline-item {
+            border-left: 2px solid #e2e8f0;
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--medical-blue);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px #e2e8f0;
+        }
+
+        .report-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .report-item:hover {
+            border-color: var(--medical-blue);
+            background: #f8fafc;
+        }
+
+        .report-icon {
+            width: 40px;
+            height: 40px;
+            background: #e0f2fe;
+            color: var(--medical-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .history-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <div class="navbar-overlay">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo">
+                <span class="brand-text">PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)"
+                    style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.5rem; border-radius: 8px; backdrop-filter: blur(5px);">
+                    <option value="en" style="color: black;">English</option>
+                    <option value="hi" style="color: black;">हिंदी</option>
+                </select>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <!-- Search Card -->
+        <div class="search-card">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by Patient Name or ID...">
+            <button class="btn-search" onclick="performSearch()">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </div>
+
+        <div class="main-layout">
+            <!-- Left: Results List -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Patients</h3>
+                </div>
+                <div id="resultsList">
+                    <p style="text-align: center; color: #94a3b8; padding: 2rem 0;">Enter search term to find
+                        patients...</p>
+                </div>
+            </div>
+
+            <!-- Right: Detailed View -->
+            <div id="detailView" class="card" style="display: none;">
+                <div class="detail-header">
+                    <h2 id="pName">Patient Name</h2>
+                    <p class="patient-meta" style="font-size: 1rem;">
+                        <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 4px; color: #475569;">ID:
+                            <span id="pId"></span></span>
+                        <span>•</span>
+                        Age: <span id="pAge" style="font-weight: 600;"></span>
+                        <span>•</span>
+                        Phone: <span id="pPhone" style="font-weight: 600;"></span>
+                    </p>
+                </div>
+
+                <!-- Prescription Form -->
+                <div class="prescription-form">
+                    <h3
+                        style="margin-top: 0; margin-bottom: 1.5rem; color: var(--medical-dark); display: flex; align-items: center; gap: 0.5rem;">
+                        <span
+                            style="background: var(--medical-blue); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem;">+</span>
+                        Add Prescription / Diagnosis
+                    </h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Diagnosed Disease</label>
+                        <input type="text" id="diseaseInput" class="form-control" placeholder="e.g. Viral Fever">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Prescription / Medication</label>
+                        <textarea id="rxInput" class="form-control" rows="4" placeholder="Rx details..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Private Notes</label>
+                        <textarea id="notesInput" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <button class="btn-save" onclick="savePrescription()">Save Record</button>
+                </div>
+
+                <!-- History Grid -->
+                <div class="history-grid">
+                    <div>
+                        <h3 class="card-title" style="margin-bottom: 1.5rem;">Medical History</h3>
+                        <div id="rxHistory"></div>
+                    </div>
+                    <div>
+                        <h3 class="card-title" style="margin-bottom: 1.5rem;">Lab Reports</h3>
+                        <div id="reportHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        let currentPatientId = null;
+
+        // Auto search from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const q = urlParams.get('q');
+        if (q) {
+            document.getElementById('searchInput').value = q;
+            performSearch();
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
+
+            try {
+                const response = await fetch(`/api/doctor/search-patient?query=${query}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                const list = document.getElementById('resultsList');
+                list.innerHTML = '';
+
+                if (data.patients.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #94a3b8; padding: 2rem 0;">No patients found.</p>';
+                    return;
+                }
+
+                data.patients.forEach(p => {
+                    list.innerHTML += `
+                        <div class="patient-list-item" onclick="loadPatient('${p.patient_id}')">
+                            <h4>${p.name}</h4>
+                            <div class="patient-meta">
+                                <span>ID: ${p.patient_id}</span>
+                                <span>•</span>
+                                <span>Age: ${p.age}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadPatient(id) {
+            currentPatientId = id;
+            try {
+                const response = await fetch(`/api/doctor/patient/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const p = data.patient;
+                    document.getElementById('pName').textContent = p.name;
+                    document.getElementById('pId').textContent = p.patient_id;
+                    document.getElementById('pAge').textContent = p.age;
+                    document.getElementById('pPhone').textContent = p.phone;
+
+                    document.getElementById('detailView').style.display = 'block';
+
+                    renderHistory(data.prescriptions, data.reports);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderHistory(rxList, reportList) {
+            const rxDiv = document.getElementById('rxHistory');
+            const reportDiv = document.getElementById('reportHistory');
+
+            rxDiv.innerHTML = '';
+            reportDiv.innerHTML = '';
+
+            if (rxList.length === 0) rxDiv.innerHTML = '<p class="text-secondary">No history.</p>';
+            rxList.forEach(rx => {
+                rxDiv.innerHTML += `
+                    <div class="timeline-item">
+                        <p style="font-size: 0.85rem; color: #94a3b8; margin: 0 0 0.25rem 0;">${new Date(rx.created_at).toLocaleDateString()}</p>
+                        <h4 style="margin: 0; color: var(--medical-dark); font-size: 1rem;">${rx.disease || 'General Checkup'}</h4>
+                        <p style="margin: 0.5rem 0 0 0; color: #334155; font-size: 0.95rem;">${rx.prescription}</p>
+                    </div>
+                `;
+            });
+
+            if (reportList.length === 0) reportDiv.innerHTML = '<p class="text-secondary">No reports.</p>';
+            reportList.forEach(rep => {
+                const icon = rep.file_type === 'pdf' ? 'fa-file-pdf' : 'fa-image';
+                reportDiv.innerHTML += `
+                    <div class="report-item">
+                        <a href="/${rep.file_path}" target="_blank" class="report-icon" style="text-decoration: none;">
+                            <i class="fas ${icon}"></i>
+                        </a>
+                        <div>
+                             <h4 style="margin: 0; font-size: 0.95rem; color: #334155;">${rep.report_type}</h4>
+                             <p style="margin: 0; font-size: 0.8rem; color: #94a3b8;">${new Date(rep.uploaded_at).toLocaleDateString()}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function savePrescription() {
+            if (!currentPatientId) return;
+
+            const disease = document.getElementById('diseaseInput').value;
+            const rx = document.getElementById('rxInput').value;
+            const notes = document.getElementById('notesInput').value;
+
+            if (!rx) return alert('Prescription details required');
+
+            try {
+                await fetch('/api/doctor/prescription', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        patient_id: currentPatientId,
+                        disease,
+                        prescription: rx,
+                        notes
+                    })
+                });
+                alert('Record saved!');
+                loadPatient(currentPatientId);
+
+                document.getElementById('diseaseInput').value = '';
+                document.getElementById('rxInput').value = '';
+                document.getElementById('notesInput').value = '';
+            } catch (e) { alert('Failed to save'); }
+        }
+    </script>
+</body>
+
+</html>

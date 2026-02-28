@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Reports - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .upload-zone {
+            border: 2px dashed var(--gray-400);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+        }
+
+        .report-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideUp 0.3s ease;
+        }
+
+        .report-info h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .report-meta {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">Back</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="grid grid-2">
+            <!-- Upload Section -->
+            <div>
+                <h2 class="mb-3">Upload New Report</h2>
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">📂</div>
+                    <h3>Click to Upload Report</h3>
+                    <p class="text-secondary">Supported formats: PDF, JPG, PNG</p>
+                    <input type="file" id="fileInput" hidden accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+
+                <div id="uploadPreview"
+                    style="display: none; background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: var(--shadow-sm); margin-bottom: 1rem;">
+                    <p>File: <strong id="fileName"></strong></p>
+                    <h4 class="mt-3 mb-2">Diagnostic Results from Report</h4>
+                    <div class="grid grid-2" style="gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Sputum Smear Test</label>
+                            <select id="sputumSmearInput" class="form-select">
+                                <option value="Negative">Negative</option>
+                                <option value="Positive">Positive</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Diabetes</label>
+                            <select id="diabetesInput" class="form-select">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">HIV Status</label>
+                            <select id="hivInput" class="form-select">
+                                <option value="No">No</option>
+                                <option value="Yes">Yes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Smoking Status</label>
+                            <select id="smokingInput" class="form-select">
+                                <option value="Non-smoker">Non-smoker</option>
+                                <option value="Ex-smoker">Ex-smoker</option>
+                                <option value="Smoker">Smoker</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label class="form-label">Symptoms Noted in Report (comma separated)</label>
+                        <input type="text" id="symptomsInput" class="form-input"
+                            placeholder="e.g. Cough, Night Sweats, Weight Loss">
+                    </div>
+                    <button class="btn btn-primary btn-full mt-3" onclick="uploadAndAnalyze()">Analyze & Save
+                        Report</button>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <!-- Book Lab Test Section -->
+            <div class="upload-zone" onclick="openFindLabModal()"
+                style="border-color: var(--primary); background: rgba(102, 126, 234, 0.1);">
+                <div class="upload-icon" style="color: var(--primary);">🏥</div>
+                <h3>Book a Lab Test</h3>
+                <p class="text-secondary">Find nearby labs & schedule home collection</p>
+            </div>
+
+            <!-- History Section -->
+            <div>
+                <h2 class="mb-3">My Reports</h2>
+                <div id="reportsList" style="max-height: 400px; overflow-y: auto;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+            <!-- Bookings Section -->
+            <div>
+                <h2 class="mb-3">My Bookings</h2>
+                <div id="bookingsList" style="max-height: 400px; overflow-y: auto;">
+                    <p class="text-secondary">Loading bookings...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Find Lab Modal -->
+    <div id="findLabModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" onclick="closeModal('findLabModal')">&times;</span>
+            <h2>Find a Lab</h2>
+            <div class="form-group">
+                <input type="text" id="labSearch" class="form-input" placeholder="Search labs by name or address..."
+                    onkeyup="filterLabs()">
+            </div>
+            <div id="labsList" class="grid grid-2" style="max-height: 500px; overflow-y: auto; gap: 1rem;">
+                <!-- Labs will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('bookingModal')">&times;</span>
+            <h2>Book Test at <span id="bookingLabName" class="text-primary"></span></h2>
+            <form id="bookingForm" onsubmit="submitBooking(event)">
+                <input type="hidden" id="bookingLabId">
+                <div class="form-group">
+                    <label class="form-label">Patient Name</label>
+                    <input type="text" id="pName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="pPhone" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Full Address</label>
+                    <textarea id="pAddress" class="form-input" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Test Type</label>
+                    <select id="pTestType" class="form-select" required>
+                        <option value="Full Body Checkup">Full Body Checkup</option>
+                        <option value="Blood Test">Blood Test</option>
+                        <option value="Thyroid Profile">Thyroid Profile</option>
+                        <option value="Diabetes Screen">Diabetes Screen</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            position: relative;
+            animation: slideDown 0.3s;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .lab-card {
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .lab-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-card {
+            background: #fff;
+            border-left: 4px solid var(--gray-400);
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .booking-card.confirmed {
+            border-left-color: var(--primary);
+        }
+
+        .booking-card.collected {
+            border-left-color: var(--warning);
+        }
+
+        .booking-card.completed {
+            border-left-color: var(--success);
+        }
+    </style>
+
+    <script src="../js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReports();
+            loadBookings();
+        });
+
+        // --- Booking System Logic ---
+        let allLabs = [];
+
+        async function openFindLabModal() {
+            document.getElementById('findLabModal').style.display = 'block';
+            await fetchLabs();
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        async function fetchLabs() {
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch('/api/bookings/labs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    allLabs = data.labs;
+                    renderLabs(allLabs);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderLabs(labs) {
+            const list = document.getElementById('labsList');
+            list.innerHTML = labs.map(lab => `
+                <div class="lab-card" onclick="openBookingModal('${lab.hospital_id}', '${lab.hospital_name}')">
+                    <h4>${lab.hospital_name}</h4>
+                    <p class="text-sm text-secondary">📍 ${lab.address || 'Address not available'}</p>
+                    <p class="text-sm text-secondary">📞 ${lab.phone || 'N/A'}</p>
+                    <button class="btn btn-sm btn-outline mt-2">Select Lab</button>
+                </div>
+            `).join('');
+        }
+
+        function filterLabs() {
+            const query = document.getElementById('labSearch').value.toLowerCase();
+            const filtered = allLabs.filter(l => l.hospital_name.toLowerCase().includes(query) || (l.address && l.address.toLowerCase().includes(query)));
+            renderLabs(filtered);
+        }
+
+        function openBookingModal(id, name) {
+            document.getElementById('bookingLabId').value = id;
+            document.getElementById('bookingLabName').textContent = name;
+            closeModal('findLabModal');
+            document.getElementById('bookingModal').style.display = 'block';
+        }
+
+        async function submitBooking(e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const data = {
+                lab_id: document.getElementById('bookingLabId').value,
+                patient_name: document.getElementById('pName').value,
+                phone: document.getElementById('pPhone').value,
+                address: document.getElementById('pAddress').value,
+                test_type: document.getElementById('pTestType').value
+            };
+
+            try {
+                const res = await fetch('/api/bookings/book', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const resData = await res.json();
+                if (resData.success) {
+                    alert('Booking Request Sent Successfully!');
+                    closeModal('bookingModal');
+                    loadBookings(); // Reload bookings
+                } else {
+                    alert('Booking Failed: ' + resData.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error submitting booking');
+            }
+        }
+
+        async function loadBookings() {
+            const list = document.getElementById('bookingsList');
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch('/api/bookings/my-bookings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.bookings.length === 0) {
+                        list.innerHTML = '<p class="text-secondary">No current bookings.</p>';
+                        return;
+                    }
+                    list.innerHTML = data.bookings.map(book => `
+                        <div class="booking-card ${book.status}">
+                            <div style="display:flex; justify-content:space-between;">
+                                <strong>${book.test_type}</strong>
+                                <span class="badge badge-${book.status === 'confirmed' ? 'success' : 'secondary'}">
+                                    ${book.status.toUpperCase()}
+                                </span>
+                            </div>
+                            <p class="text-sm mt-1">Lab: ${book.hospital_name}</p>
+                            <p class="text-sm text-secondary">Date: ${book.collection_date ? new Date(book.collection_date).toLocaleString() : 'Pending Scheduling'}</p>
+                            ${book.report_eta ? `<p class="text-sm text-primary">Report ETA: ${new Date(book.report_eta).toLocaleDateString()}</p>` : ''}
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = '<p class="text-danger">Failed to load bookings</p>';
+            }
+        }
+
+        // --- Existing Report Logic ---
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                document.getElementById('fileName').textContent = this.files[0].name;
+                document.getElementById('uploadPreview').style.display = 'block';
+            }
+        });
+
+        async function uploadAndAnalyze() {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a report file first.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('report', file);
+            formData.append('sputum_smear', document.getElementById('sputumSmearInput').value);
+            formData.append('diabetes', document.getElementById('diabetesInput').value);
+            formData.append('hiv', document.getElementById('hivInput').value);
+            formData.append('smoking_status', document.getElementById('smokingInput').value);
+            formData.append('symptoms', document.getElementById('symptomsInput').value);
+
+            // Add basic info from localStorage
+            formData.append('age', localStorage.getItem('userAge') || 30);
+            formData.append('gender', localStorage.getItem('userGender') || 'Other');
+
+            const token = localStorage.getItem('token');
+            const btn = document.querySelector('.btn-primary');
+            const originalText = btn.textContent;
+            btn.textContent = 'Analyzing...';
+            btn.disabled = true;
+
+            try {
+                // 1. First upload the report normally
+                const uploadRes = await fetch('/api/patient/upload-report', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData // Note: Form data includes fields and file
+                });
+
+                // 2. Then call the analysis API
+                const analyzeRes = await fetch('/api/patient/analyze-report', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                const data = await analyzeRes.json();
+
+                if (data.result) {
+                    alert(`Analysis Complete!\nResult: ${data.result}\nConfidence: ${data.confidence}\nNote: ${data.findings[0]}`);
+                    document.getElementById('uploadPreview').style.display = 'none';
+                    fileInput.value = '';
+                    loadReports(); // Reload list
+                } else {
+                    alert('Analysis failed: ' + (data.message || data.error));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred during processing.');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function loadReports() {
+            const list = document.getElementById('reportsList');
+            const token = localStorage.getItem('token');
+            const patientId = localStorage.getItem('patientId');
+
+            try {
+                const response = await fetch(`/api/patient/reports/${patientId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    list.innerHTML = '';
+                    if (data.reports.length === 0) {
+                        list.innerHTML = '<p class="text-secondary">No reports uploaded yet.</p>';
+                        return;
+                    }
+
+                    data.reports.forEach(report => {
+                        const date = new Date(report.uploaded_at).toLocaleDateString();
+                        // Parse analysis result if it exists and is a string
+                        let analysisText = 'Analysis Pending';
+                        try {
+                            const result = typeof report.analysis_result === 'string' ? JSON.parse(report.analysis_result) : report.analysis_result;
+                            if (result && result.summary) analysisText = result.summary;
+                        } catch (e) { }
+
+                        list.innerHTML += `
+                            <div class="report-card">
+                                <div class="report-info">
+                                    <h4>${report.report_type}</h4>
+                                    <p class="report-meta">Uploaded on ${date}</p>
+                                    <p style="font-size: 0.9rem; margin-top: 0.5rem; color: var(--primary);">
+                                        <strong>AI Insight:</strong> ${analysisText}
+                                    </p>
+                                </div>
+                                <a href="/${report.file_path}" target="_blank" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.9rem;">View</a>
+                            </div>
+                        `;
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                list.innerHTML = '<p class="text-danger">Failed to load reports.</p>';
+            }
+        }
+    </script>
+</body>
+
+</html>

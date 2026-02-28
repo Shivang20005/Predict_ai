@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .appt-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--gray-400);
+            animation: slideInScale 0.4s ease;
+        }
+
+        .appt-pending {
+            border-left-color: var(--warning);
+        }
+
+        .appt-accepted {
+            border-left-color: var(--primary);
+        }
+
+        .appt-rejected {
+            border-left-color: var(--danger);
+        }
+
+        .appt-completed {
+            border-left-color: var(--success);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg"></div>
+
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <a href="dashboard.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">Back</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">My Appointments</h2>
+        <div id="appointmentsList">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal" style="display: none;">
+        <div class="modal-content text-center">
+            <span class="modal-close" onclick="closePayment()">&times;</span>
+            <h2 class="mb-3">Secure Payment</h2>
+            <div class="mb-4">
+                <p>Paying to: <strong id="payDoctorName">Dr. Name</strong></p>
+                <div style="font-size: 2rem; font-weight: 700; color: var(--primary); margin: 1rem 0;">
+                    ₹<span id="payAmount">500</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-full mb-3" onclick="processPayment()">
+                Pay with UPI / Card (Simulated)
+            </button>
+            <button class="btn btn-outline btn-full" onclick="closePayment()">Cancel</button>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAppointments);
+        let currentApptId = null;
+
+        async function loadAppointments() {
+            const list = document.getElementById('appointmentsList');
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch('/api/patient/appointments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    list.innerHTML = '';
+                    if (data.appointments.length === 0) {
+                        list.innerHTML = '<p>No appointments found.</p>';
+                        return;
+                    }
+
+                    data.appointments.forEach(appt => {
+                        list.innerHTML += createApptCard(appt);
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+                list.innerHTML = '<p class="text-danger">Failed to load appointments.</p>';
+            }
+        }
+
+        function createApptCard(appt) {
+            const date = new Date(appt.created_at).toLocaleDateString();
+            let statusColor = 'var(--gray-600)';
+            let statusBadge = 'badge-warning';
+            let actionBtn = '';
+
+            if (appt.status === 'pending') {
+                statusBadge = 'badge-warning';
+                actionBtn = '<span class="text-secondary text-sm">Waiting for Doctor confirmation</span>';
+            } else if (appt.status === 'accepted') {
+                statusBadge = 'badge-success'; // Actually blueish for active
+                statusColor = 'var(--primary)';
+
+                if (appt.payment_status === 'pending') {
+                    actionBtn = `<button class="btn btn-primary" onclick="openPayment('${appt.appointment_id}', '${appt.doctor_name}', '${appt.payment_amount || 500}')">Pay Now to Join</button>`;
+                } else {
+                    const now = new Date();
+                    const meetTime = appt.meeting_time ? new Date(appt.meeting_time) : null;
+                    const fiveMinsBefore = meetTime ? new Date(meetTime.getTime() - 5 * 60000) : null;
+                    const oneHourAfter = meetTime ? new Date(meetTime.getTime() + 60 * 60000) : null;
+
+                    if (meetTime && now >= fiveMinsBefore && now <= oneHourAfter) {
+                        actionBtn = `<a href="${appt.meet_link || '#'}" target="_blank" class="btn btn-success">Join Meeting 📹</a>`;
+                    } else if (meetTime && now < fiveMinsBefore) {
+                        actionBtn = `<button class="btn btn-secondary" disabled title="Meeting starts at ${meetTime.toLocaleTimeString()}">Not Started Yet</button>`;
+                    } else if (meetTime && now > oneHourAfter) {
+                        actionBtn = `<button class="btn btn-secondary" disabled title="Meeting ended">Meeting Expired</button>`;
+                    } else {
+                        actionBtn = `<a href="${appt.meet_link || '#'}" target="_blank" class="btn btn-success">Join Meeting 📹</a>`;
+                    }
+                }
+            } else if (appt.status === 'rejected') {
+                statusBadge = 'badge-danger';
+                actionBtn = '<span class="text-danger">Appointment Rejected</span>';
+            } else if (appt.status === 'completed') {
+                statusBadge = 'badge-success';
+                actionBtn = '<span class="text-success">Completed</span>';
+            }
+
+            return `
+                <div class="appt-card appt-${appt.status}">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                        <div>
+                            <h3 class="mb-1">${appt.doctor_name}</h3>
+                            <p class="text-secondary">${appt.specialization} • ${appt.hospital_name}</p>
+                        </div>
+                        <span class="badge ${statusBadge}">${appt.status.toUpperCase()}</span>
+                    </div>
+                    
+                    <p class="mb-2"><strong>Date Requested:</strong> ${date}</p>
+                    ${appt.meeting_time ? `<p class="mb-2" style="color: var(--primary);"><strong>Scheduled Meeting:</strong> ${new Date(appt.meeting_time).toLocaleString()}</p>` : ''}
+                    <p class="mb-3 text-secondary"><strong>Notes:</strong> ${appt.notes || 'None'}</p>
+                    
+                    <div style="border-top: 1px solid var(--gray-200); padding-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            ${appt.payment_status === 'completed' ? '<span class="text-success">✅ Paid</span>' : '<span class="text-warning">⏳ Payment Pending</span>'}
+                        </div>
+                        <div>
+                            ${actionBtn}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openPayment(id, name, amount) {
+            currentApptId = id;
+            document.getElementById('payDoctorName').textContent = name;
+            document.getElementById('payAmount').textContent = amount;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+            currentApptId = null;
+        }
+
+        async function processPayment() {
+            if (!currentApptId) return;
+
+            const token = localStorage.getItem('token');
+            const btn = document.querySelector('#paymentModal .btn-primary');
+            btn.textContent = 'Processing Payment...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/patient/payment/${currentApptId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ payment_method: 'UPI_SIMULATED' })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Payment Successful!');
+                    closePayment();
+                    loadAppointments(); // Reload to show Meet Link
+                } else {
+                    alert('Payment failed: ' + data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Payment error');
+            } finally {
+                btn.textContent = 'Pay with UPI / Card (Simulated)';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+
+</html>

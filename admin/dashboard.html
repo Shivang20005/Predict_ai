@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 3rem;
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .nav-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .table-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+            color: #64748b;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .badge-verified {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .btn-delete {
+            color: var(--danger);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo-container" style="margin-bottom: 3rem;">
+            <img src="../images/logo.png" alt="Logo" style="height: 40px;">
+            <span>ADMIN</span>
+        </div>
+        <div class="nav-item active" onclick="showSection('overview')" data-i18n="overview">📊 Overview</div>
+        <div class="nav-item" onclick="showSection('patients')" data-i18n="patients">👥 Patients</div>
+        <div class="nav-item" onclick="showSection('doctors')" data-i18n="doctors">👨‍⚕️ Doctors</div>
+        <div class="nav-item" onclick="showSection('hospitals')" data-i18n="hospitals">🏥 Hospitals</div>
+        <div class="nav-item" onclick="showSection('labs')" data-i18n="labs">🧪 Labs</div>
+        <div class="nav-item" onclick="showSection('medical')" data-i18n="medical">💊 Medical</div>
+
+        <div style="margin-top: 2rem; padding: 0 1rem;">
+            <label style="font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 0.5rem;"
+                data-i18n="language">Language</label>
+            <select onchange="switchLanguage(this.value)" class="lang-select"
+                style="width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.5rem; border-radius: 8px; cursor: pointer;">
+                <option value="en" style="color: black;">English</option>
+                <option value="hi" style="color: black;">हिंदी</option>
+            </select>
+        </div>
+
+        <div class="nav-item" onclick="window.location.href='/'"
+            style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+            🏠 Go to Home
+        </div>
+        <div class="nav-item" onclick="logout()" style="margin-top: 1rem; color: #f87171;" data-i18n="logout">🚪 Logout
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div id="overview-section">
+            <h1 class="mb-4" data-i18n="system_overview">System Overview</h1>
+            <div class="stat-grid" id="statsGrid">
+                <!-- Stats injected here -->
+            </div>
+
+            <div class="grid grid-2">
+                <div class="table-container">
+                    <h3 class="mb-4" data-i18n="disease_analytics">Disease Prevalence Analytics</h3>
+                    <canvas id="diseaseChart"></canvas>
+                </div>
+                <div class="table-container">
+                    <h3 class="mb-4" data-i18n="health_trends">Global Health Trends</h3>
+                    <p style="color: #64748b;" data-i18n="health_trends_desc">Real-time health monitoring based on
+                        diagnostic queries and reports.</p>
+                    <!-- Additional analytics can go here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="data-section" style="display: none;">
+            <h1 class="mb-4" id="sectionTitle">Title</h1>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        if (!token) window.location.href = 'login.html';
+
+        async function fetchStats() {
+            const res = await fetch('/api/admin/dashboard-stats', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                const grid = document.getElementById('statsGrid');
+                const s = data.stats;
+                grid.innerHTML = `
+                    <div class="stat-card"><p>Patients</p><div class="stat-value">${s.patients}</div></div>
+                    <div class="stat-card"><p>Doctors</p><div class="stat-value">${s.doctors}</div></div>
+                    <div class="stat-card"><p>Hospitals</p><div class="stat-value">${s.hospitals}</div></div>
+                    <div class="stat-card"><p>Appointments</p><div class="stat-value">${s.appointments}</div></div>
+                `;
+            }
+        }
+
+        async function fetchAnalytics() {
+            const res = await fetch('/api/admin/disease-analytics', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                const ctx = document.getElementById('diseaseChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.data.map(d => d.label),
+                        datasets: [{
+                            label: 'Disease Count',
+                            data: data.data.map(d => d.value),
+                            backgroundColor: '#4cc9f0',
+                            borderRadius: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+
+        async function showSection(type) {
+            const overview = document.getElementById('overview-section');
+            const dataSec = document.getElementById('data-section');
+
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (type === 'overview') {
+                overview.style.display = 'block';
+                dataSec.style.display = 'none';
+                return;
+            }
+
+            overview.style.display = 'none';
+            dataSec.style.display = 'block';
+            document.getElementById('sectionTitle').textContent = type.charAt(0).toUpperCase() + type.slice(1);
+
+            const res = await fetch(`/api/admin/${type}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await res.json();
+            if (result.success) {
+                const head = document.getElementById('tableHead');
+                const body = document.getElementById('tableBody');
+                body.innerHTML = '';
+
+                if (type === 'patients') {
+                    head.innerHTML = '<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Age</th><th>Actions</th></tr>';
+                    result.data.forEach(p => {
+                        body.innerHTML += `<tr><td><span class="badge badge-pending" style="background:#eef2ff;color:#4338ca;">#${p.patient_id}</span></td><td>${p.name}</td><td>${p.email}</td><td>${p.phone}</td><td>${p.age}</td><td><button class="btn-delete" onclick="deleteItem('patient', ${p.patient_id})">Delete</button></td></tr>`;
+                    });
+                } else if (type === 'doctors') {
+                    head.innerHTML = '<tr><th>Name</th><th>Specialization</th><th>Email</th><th>Status</th><th>Actions</th></tr>';
+                    result.data.forEach(d => {
+                        body.innerHTML += `<tr><td>${d.name}</td><td>${d.specialization}</td><td>${d.email}</td><td><span class="badge ${d.is_verified ? 'badge-verified' : 'badge-pending'}">${d.is_verified ? 'Verified' : 'Pending'}</span></td><td>
+                            ${!d.is_verified ? `<button style="color:var(--success);border:none;background:none;cursor:pointer;font-weight:600;margin-right:1rem;" onclick="verifyDoctor(${d.doctor_id})">Verify</button>` : ''}
+                            <button class="btn-delete" onclick="deleteItem('doctor', ${d.doctor_id})">Delete</button>
+                        </td></tr>`;
+                    });
+                } else if (type === 'hospitals') {
+                    head.innerHTML = '<tr><th>Name</th><th>Email</th><th>Phone</th><th>License</th><th>Status</th><th>Actions</th></tr>';
+                    result.data.forEach(h => {
+                        body.innerHTML += `<tr><td>${h.hospital_name}</td><td>${h.email}</td><td>${h.phone}</td><td>${h.license_number || 'N/A'}</td><td><span class="badge ${h.is_verified ? 'badge-verified' : 'badge-pending'}">${h.is_verified ? 'Verified' : 'Pending'}</span></td><td>
+                            ${!h.is_verified ? `<button style="color:var(--success);border:none;background:none;cursor:pointer;font-weight:600;margin-right:1rem;" onclick="verifyHospital(${h.hospital_id})">Verify</button>` : ''}
+                            <button class="btn-delete" onclick="deleteItem('hospital', ${h.hospital_id})">Delete</button>
+                        </td></tr>`;
+                    });
+                } else if (type === 'labs') {
+                    head.innerHTML = '<tr><th>Name</th><th>Email</th><th>Phone</th><th>License</th><th>Status</th><th>Actions</th></tr>';
+                    result.data.forEach(l => {
+                        body.innerHTML += `<tr><td>${l.name}</td><td>${l.email}</td><td>${l.phone}</td><td>${l.license_number || 'N/A'}</td><td><span class="badge ${l.is_verified ? 'badge-verified' : 'badge-pending'}">${l.is_verified ? 'Verified' : 'Pending'}</span></td><td>
+                            ${!l.is_verified ? `<button style="color:var(--success);border:none;background:none;cursor:pointer;font-weight:600;margin-right:1rem;" onclick="verifyLab(${l.staff_id})">Verify</button>` : ''}
+                            <button class="btn-delete" onclick="deleteItem('lab', ${l.staff_id})">Delete</button>
+                        </td></tr>`;
+                    });
+                } else if (type === 'medical') {
+                    head.innerHTML = '<tr><th>Shop Name</th><th>Owner</th><th>Email</th><th>License</th><th>Status</th><th>Actions</th></tr>';
+                    result.data.forEach(m => {
+                        body.innerHTML += `<tr><td>${m.shop_name}</td><td>${m.owner_name}</td><td>${m.email}</td><td>${m.license_number || 'N/A'}</td><td><span class="badge ${m.is_verified ? 'badge-verified' : 'badge-pending'}">${m.is_verified ? 'Verified' : 'Pending'}</span></td><td>
+                            ${!m.is_verified ? `<button style="color:var(--success);border:none;background:none;cursor:pointer;font-weight:600;margin-right:1rem;" onclick="verifyMedicalShop(${m.medical_id})">Verify</button>` : ''}
+                            <button class="btn-delete" onclick="deleteItem('medical', ${m.medical_id})">Delete</button>
+                        </td></tr>`;
+                    });
+                }
+
+                if (window.refreshTranslations) window.refreshTranslations();
+            }
+        }
+
+        async function deleteItem(type, id) {
+            if (!confirm('Are you sure?')) return;
+            const res = await fetch(`/api/admin/${type}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Deleted successfully');
+                showSection(type + 's');
+            }
+        }
+
+        async function verifyDoctor(id) {
+            const res = await fetch(`/api/admin/doctor/${id}/verify`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Doctor verified');
+                showSection('doctors');
+            }
+        }
+
+        async function verifyHospital(id) {
+            const res = await fetch(`/api/admin/hospital/${id}/verify`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Hospital verified');
+                showSection('hospitals');
+            }
+        }
+
+        async function verifyLab(id) {
+            const res = await fetch(`/api/admin/lab/${id}/verify`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Lab staff verified');
+                showSection('labs');
+            }
+        }
+
+        async function verifyMedicalShop(id) {
+            const res = await fetch(`/api/admin/medical/${id}/verify`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('Medical shop verified');
+                showSection('medical');
+            }
+        }
+
+        function logout() { localStorage.removeItem('adminToken'); window.location.href = 'login.html'; }
+
+        fetchStats();
+        fetchAnalytics();
+    </script>
+</body>
+
+</html>

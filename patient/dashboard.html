@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --bg-gradient: linear-gradient(135deg, #f0fdfa 0%, #eef2ff 50%, #fef2f2 100%);
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05), 0 10px 20px -5px rgba(0, 0, 0, 0.02);
+            --card-hover-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.6)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-main);
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            border: 2px solid white;
+        }
+
+        /* Header Section */
+        .header-content {
+            margin-bottom: 3.5rem;
+            animation: fadeInDown 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .header-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .header-content p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Card Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards;
+            padding-bottom: 3rem;
+        }
+
+        .action-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.05);
+            /* Soft shadow */
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            min-height: 380px;
+            /* Uniform height */
+        }
+
+        /* Subtle top border accent */
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(67, 97, 238, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Icon Wrapper with Glow */
+        .card-icon-wrapper {
+            width: 110px;
+            height: 110px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.5s ease;
+            position: relative;
+            /* Uniform Blue-Teal Theme */
+            background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+            color: var(--primary);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.1);
+        }
+
+        .action-card:hover .card-icon-wrapper {
+            transform: scale(1.1) rotate(6deg);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        /* Radiant Buttons */
+        .card-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.25);
+            width: fit-content;
+            margin-top: auto;
+            /* Unified Theme */
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .action-card:hover .card-cta {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+            gap: 1rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .notification-btn {
+            position: relative;
+            background: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .notification-btn:hover {
+            color: var(--primary);
+            transform: rotate(15deg) scale(1.1);
+            background: #f8fafc;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px; border-radius: 10px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1.25rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <button class="notification-btn" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+                </button>
+                <div class="user-profile"
+                    style="background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.2); color: white;">
+                    <div class="user-avatar" id="userAvatar">P</div>
+                    <span style="font-weight: 600; font-size: 0.95rem; color: white;" id="profileName"
+                        data-i18n="portal_patient">Patient</span>
+                    <div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.2); margin: 0 0.5rem;">
+                    </div>
+                    <button onclick="logout()"
+                        style="border: none; background: none; cursor: pointer; color: #f87171; font-weight: 700; font-size: 0.85rem; padding: 0.25rem;">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="header-content">
+            <h1 data-i18n="hero_title">AI-Powered Healthcare Intelligence</h1>
+            <p data-i18n="hero_subtitle">Advanced disease prediction, automated lab analysis, and seamless doctor
+                consultations.</p>
+        </header>
+
+        <!-- Action Grid -->
+        <main class="action-grid">
+            <!-- Symptom Checker -->
+            <a href="symptoms.html" class="action-card card-checker three-d-card">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                <h3 class="card-title" data-i18n="symptom_checker">Symptom Checker</h3>
+                <p class="card-desc" data-i18n="symptom_checker_desc">Advanced AI neural networks to predict potential
+                    health risks based on your
+                    symptoms.</p>
+                <div class="card-cta">
+                    <span data-i18n="analyze_symptoms">Analyze Symptoms</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- Medical History -->
+            <a href="history.html" class="action-card card-lab three-d-card">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h3 class="card-title" data-i18n="history">Medical History</h3>
+                <p class="card-desc" data-i18n="history_desc">Access all your previous lab reports and prescriptions in
+                    one place.</p>
+                <div class="card-cta">
+                    <span data-i18n="history">View History</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- Find a Doctor -->
+            <a href="doctors.html" class="action-card card-doctor three-d-card">
+                <div class="card-icon-wrapper"
+                    style="background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); color: #16a34a;">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h3 class="card-title" data-i18n="find_doctor">Find a Doctor</h3>
+                <p class="card-desc" data-i18n="find_doctor_desc">Search and book appointments with specialized doctors
+                    in your area.</p>
+                <div class="card-cta"
+                    style="background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 10px 20px -5px rgba(34, 197, 94, 0.4);">
+                    <span data-i18n="book_now">Book Now</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- Medicine Orders -->
+            <a href="medicine_orders.html" class="action-card card-doctor three-d-card">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <h3 class="card-title" data-i18n="medicine_orders">Medicine Orders</h3>
+                <p class="card-desc" data-i18n="order_medicines_desc">Track your pharmacy orders and manage your
+                    prescriptions.</p>
+                <div class="card-cta">
+                    <span data-i18n="view_status">Track Orders</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- Lab Analysis -->
+            <a href="lab_reports.html" class="action-card card-lab three-d-card">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <h3 class="card-title" data-i18n="reports">Lab Analysis</h3>
+                <p class="card-desc" data-i18n="reports_desc">Upload clinical reports for instant AI processing and
+                    biomarker trend analysis.</p>
+                <div class="card-cta">
+                    <span data-i18n="reports">Analyze Reports</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- My Care -->
+            <a href="appointments.html" class="action-card card-appointments three-d-card">
+                <div class="card-icon-wrapper">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3 class="card-title" data-i18n="care_timeline">Care Timeline</h3>
+                <p class="card-desc" data-i18n="care_timeline_desc">Monitor your upcoming appointments and
+                    prescriptions.</p>
+                <div class="card-cta">
+                    <span data-i18n="view_status">View Status</span> <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+        </main>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        // Authentication check
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        // Profile population
+        const patientName = localStorage.getItem('patientName');
+        const pNameElement = document.getElementById('profileName');
+        if (pNameElement) pNameElement.textContent = patientName || 'Patient';
+        if (patientName) {
+            document.getElementById('userAvatar').textContent = patientName.charAt(0).toUpperCase();
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Staff Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .upload-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-xl);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .verified-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);"></div>
+
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 40px;">
+                <span>PREDICT_AI</span>
+            </a>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <select onchange="switchLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                </select>
+                <span id="staffName" style="font-weight: 600; color: white;">Staff Name</span>
+                <button class="btn btn-outline btn-sm" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="grid grid-2" style="gap: 2rem;">
+            <!-- Upload Report Section (Existing) -->
+            <div class="upload-card">
+                <h2 class="text-center mb-4">Upload Patient Report</h2>
+
+                <!-- Step 1: Find Patient -->
+                <div id="step1">
+                    <div class="form-group">
+                        <label class="form-label">Enter Patient ID</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <input type="number" id="patientIdInput" class="form-input" placeholder="e.g. 101">
+                            <button class="btn btn-primary" onclick="verifyPatient()">Verify</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Upload -->
+                <div id="step2" style="display: none;">
+                    <div class="text-center">
+                        <div class="verified-badge">
+                            <span>✓</span>
+                            <span id="confirmedName">Patient Name</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Report Type</label>
+                        <select id="repType" class="form-select">
+                            <option value="Blood Test">Blood Test</option>
+                            <option value="Urine Test">Urine Test</option>
+                            <option value="X-Ray">X-Ray</option>
+                            <option value="MRI Scans">MRI Scans</option>
+                            <option value="CT Scan">CT Scan</option>
+                            <option value="Pathology">Pathology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Doctor ID (Optional)</label>
+                        <input type="number" id="doctorIdInput" class="form-input"
+                            placeholder="Enter Doctor ID if known">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Select File (Image/PDF)</label>
+                        <input type="file" id="repFile" class="form-input" accept=".jpg,.png,.pdf,.jpeg">
+                    </div>
+
+                    <button class="btn btn-success btn-full" onclick="uploadReport()">Upload & Send to Patient &
+                        Doctor</button>
+                    <button class="btn btn-outline btn-full mt-2" onclick="resetForm()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Booking Management Section (New) -->
+            <div class="upload-card">
+                <h2 class="text-center mb-4">Manage Bookings</h2>
+                <div id="bookingsList" style="max-height: 500px; overflow-y: auto;">
+                    <p class="text-center text-secondary">Loading bookings...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('scheduleModal')">&times;</span>
+            <h3>Schedule Collection</h3>
+            <input type="hidden" id="schedBookingId">
+            <div class="form-group">
+                <label class="form-label">Collection Date & Time</label>
+                <input type="datetime-local" id="schedDate" class="form-input">
+            </div>
+            <button class="btn btn-primary btn-full" onclick="confirmSchedule()">Confirm Schedule</button>
+        </div>
+    </div>
+
+    <!-- Collection/Report Modal -->
+    <div id="collectionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('collectionModal')">&times;</span>
+            <h3>Mark Sample Collected</h3>
+            <input type="hidden" id="collBookingId">
+            <div class="form-group">
+                <label class="form-label">Report Expected Date (ETA)</label>
+                <input type="date" id="reportDate" class="form-input">
+            </div>
+            <button class="btn btn-success btn-full" onclick="confirmCollection()">Mark Collected</button>
+        </div>
+    </div>
+
+    <!-- Final Upload Modal -->
+    <div id="finalUploadModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('finalUploadModal')">&times;</span>
+            <h3>Upload Final Report</h3>
+            <input type="hidden" id="finalBookingId">
+            <div class="form-group">
+                <label class="form-label">Doctor ID (Optional)</label>
+                <input type="number" id="finalDoctorId" class="form-input" placeholder="Enter Doctor ID">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Report File (PDF/Image)</label>
+                <input type="file" id="finalReportFile" class="form-input" accept=".jpg,.png,.pdf,.jpeg">
+            </div>
+            <button class="btn btn-info btn-full" onclick="uploadFinalReport()">Send to Patient & Doctor</button>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 12px;
+            position: relative;
+            animation: slideDown 0.3s;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .booking-item {
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+
+        .booking-item:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = './lab_login.html';
+
+        document.getElementById('staffName').textContent = localStorage.getItem('staffName') || 'Lab Staff';
+
+        // Load bookings on init
+        loadLabBookings();
+
+        async function loadLabBookings() {
+            const list = document.getElementById('bookingsList');
+            try {
+                const res = await fetch('/api/bookings/lab/bookings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    if (data.bookings.length === 0) {
+                        list.innerHTML = '<p class="text-center text-secondary">No pending bookings.</p>';
+                        return;
+                    }
+
+                    list.innerHTML = data.bookings.map(book => `
+                        <div class="booking-item">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4 style="margin:0;">${book.patient_name}</h4>
+                                <span class="badge badge-primary">${book.status.toUpperCase()}</span>
+                            </div>
+                            <p class="text-sm text-secondary mt-1">${book.test_type} | 📞 ${book.phone}</p>
+                            <p class="text-sm text-secondary">📍 ${book.address}</p>
+                            ${book.collection_date ? `<p class="text-sm text-success">Scheduled: ${new Date(book.collection_date).toLocaleString()}</p>` : ''}
+                            
+                            <div class="booking-actions">
+                                ${book.status === 'pending' ?
+                            `<button class="btn btn-sm btn-primary" onclick="openScheduleModal(${book.booking_id})">Accept & Schedule</button>` : ''}
+                                
+                                ${book.status === 'confirmed' ?
+                            `<button class="btn btn-sm btn-success" onclick="openCollectionModal(${book.booking_id})">Mark Collected</button>` : ''}
+                                
+                                ${book.status === 'collected' ?
+                            `<button class="btn btn-sm btn-info" onclick="openFinalUploadModal(${book.booking_id})">Upload Report & Send</button>` : ''}
+
+                                ${book.status === 'completed' ?
+                            `<button class="btn btn-sm btn-outline" disabled>Completed</button>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                list.innerHTML = '<p class="text-danger">Failed to load bookings</p>';
+            }
+        }
+
+        function openScheduleModal(id) {
+            document.getElementById('schedBookingId').value = id;
+            document.getElementById('scheduleModal').style.display = 'block';
+        }
+
+        function openCollectionModal(id) {
+            document.getElementById('collBookingId').value = id;
+            document.getElementById('collectionModal').style.display = 'block';
+        }
+
+        function openFinalUploadModal(id) {
+            document.getElementById('finalBookingId').value = id;
+            document.getElementById('finalUploadModal').style.display = 'block';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        async function confirmSchedule() {
+            const id = document.getElementById('schedBookingId').value;
+            const date = document.getElementById('schedDate').value;
+            if (!date) return alert('Please select a date');
+
+            await updateStatus(id, 'confirmed', { collection_date: date });
+            closeModal('scheduleModal');
+        }
+
+        async function confirmCollection() {
+            const id = document.getElementById('collBookingId').value;
+            const date = document.getElementById('reportDate').value;
+            if (!date) return alert('Please set Report ETA');
+
+            await updateStatus(id, 'collected', { report_eta: date });
+            closeModal('collectionModal');
+        }
+
+        async function uploadFinalReport() {
+            const bookingId = document.getElementById('finalBookingId').value;
+            const file = document.getElementById('finalReportFile').files[0];
+            if (!file) return alert('Please select a file');
+
+            const formData = new FormData();
+            formData.append('report', file);
+            formData.append('doctor_id', document.getElementById('finalDoctorId').value);
+
+            try {
+                const res = await fetch(`/api/bookings/lab/complete-booking/${bookingId}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Report Sent Successfully!');
+                    closeModal('finalUploadModal');
+                    loadLabBookings();
+                } else {
+                    alert('Failed: ' + data.message);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error uploading report');
+            }
+        }
+
+        async function updateStatus(id, status, extraData = {}) {
+            try {
+                const res = await fetch(`/api/bookings/lab/update-status/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, ...extraData })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Status Updated!');
+                    loadLabBookings();
+                } else {
+                    alert('Failed: ' + data.message);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error updating status');
+            }
+        }
+
+        async function verifyPatient() {
+            const id = document.getElementById('patientIdInput').value;
+            if (!id) return;
+
+            // In a real app we would verify ID properly. Assuming valid for demo based on user role limitations in this iteration.
+
+            document.getElementById('confirmedName').textContent = 'Patient ID: ' + id;
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('repFile').value = '';
+        }
+
+        async function uploadReport() {
+            const id = document.getElementById('patientIdInput').value;
+            const type = document.getElementById('repType').value;
+            const file = document.getElementById('repFile').files[0];
+
+            if (!file) return alert('Please select a file');
+
+            const formData = new FormData();
+            formData.append('patient_id', id);
+            formData.append('report_type', type);
+            formData.append('report', file);
+            formData.append('doctor_id', document.getElementById('doctorIdInput').value);
+
+            try {
+                const response = await fetch('/api/hospital/lab-staff/upload-report', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Report Uploaded Successfully!');
+                    resetForm();
+                } else {
+                    alert('Upload Failed: ' + data.message);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Error uploading report');
+            }
+        }
+
+        function logout() { localStorage.clear(); window.location.href = 'lab_login.html'; }
+    </script>
+</body>
+
+</html>

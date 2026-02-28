@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Staff Registration - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .auth-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+            position: relative;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="animated-bg" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);"></div>
+    <a href="/" class="back-home"><span>←</span><span>Back to Home</span></a>
+
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div class="auth-box">
+            <a href="/" class="logo-container" style="justify-content: center; margin-bottom: 2rem;">
+                <img src="../images/logo.png" alt="Logo" class="logo-img" style="height: 60px;">
+                <span style="font-size: 2rem; color: #00b09b;">PREDICT_AI</span>
+            </a>
+
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="color: #00b09b;">Staff Registration</h1>
+                <p class="text-secondary">Join Hospital Laboratory Team</p>
+            </div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="name" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Hospital ID (Ask Admin)</label>
+                    <input type="number" id="hospId" class="form-input" required placeholder="e.g. 1">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contact Phone</label>
+                    <input type="tel" id="phone" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Staff License / Certification Number</label>
+                    <input type="text" id="license" class="form-input" placeholder="e.g. LAB-12345" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" id="email" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="pass" class="form-input" minlength="6" maxlength="15" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full mt-3"
+                    style="background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); border: none;">Register</button>
+            </form>
+
+            <div class="auth-footer mt-4 text-center">
+                Already Registered? <a href="/hospital/lab_login.html" style="color: #00b09b;">Login Here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const body = {
+                name: document.getElementById('name').value,
+                hospital_id: document.getElementById('hospId').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('pass').value,
+                license_number: document.getElementById('license').value
+            };
+
+            try {
+                const response = await fetch('/api/hospital/lab-staff/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Registration Successful! Please Login.');
+                    window.location.href = '/hospital/lab_login.html';
+                } else { alert('Error: ' + data.message); }
+            } catch (error) { alert('An error occurred'); }
+        });
+    </script>
+</body>
+
+</html>

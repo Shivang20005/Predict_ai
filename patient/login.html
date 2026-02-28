@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --bg-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .auth-page-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(rgba(99, 102, 241, 0.5), rgba(168, 85, 247, 0.5)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .back-home {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .back-home:hover {
+            transform: translateX(-5px);
+        }
+
+        .login-card-container {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-width: 1000px;
+            width: 90%;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .illustration-side {
+            flex: 1;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .illustration-img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(99, 102, 241, 0.2));
+            animation: float 4s infinite ease-in-out;
+        }
+
+        .form-side {
+            flex: 1;
+            padding: 4rem 3rem;
+        }
+
+        .logo-container {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-img {
+            height: 70px;
+            /* Enlarged */
+            width: auto;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--bg-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+
+        .auth-subtitle {
+            color: #64748b;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 12px;
+            background: var(--bg-gradient);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            margin-top: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .signup-text {
+            text-align: center;
+            margin-top: 2rem;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .signup-link {
+            color: var(--primary);
+            text-decoration: underline;
+            /* Underlined as requested */
+            font-weight: 700;
+            /* Bold as requested */
+            transition: color 0.3s ease;
+        }
+
+        .signup-link:hover {
+            color: var(--secondary);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .illustration-side {
+                display: none;
+            }
+
+            .login-card-container {
+                max-width: 450px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-page-wrapper">
+        <a href="../index.html" class="back-home">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+
+        <div class="login-card-container">
+            <!-- Professional Illustration Side -->
+            <div class="illustration-side">
+                <img src="../images/medical_illustration_login.png" alt="Medical Illustration" class="illustration-img">
+            </div>
+
+            <!-- Login Form Side -->
+            <div class="form-side">
+                <a href="../index.html" class="logo-container">
+                    <img src="../images/logo.png" alt="Logo" style="height: 60px; margin-bottom: 1rem;">
+                    <span class="logo-text">PREDICT_AI</span>
+                </a>
+
+                <div class="auth-header">
+                    <h1 class="auth-title">Patient Login</h1>
+                    <p class="auth-subtitle">Secure access to your health dashboard</p>
+                </div>
+
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" id="email" placeholder="name@example.com"
+                            autocomplete="new-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" placeholder="••••••••"
+                            autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">
+                        Login to Dashboard <i class="fas fa-sign-in-alt" style="margin-left: 0.5rem;"></i>
+                    </button>
+                </form>
+
+                <div class="signup-text">
+                    Don't have an account? <a href="signup.html" class="signup-link">Sign Up Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script src="../js/validator.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Optional: Client-side validation for login to save request
+            // User requested validation on login too.
+            const validationResult = Validator.validatePassword(password);
+            if (!validationResult.valid) {
+                // We can either block or just warn. User said "required ho password set krne ke liye" -> mostly implies signup. 
+                // But also said "password wala function ... log in page dono mein ho jaaye".
+                // Strict interpretation: enforce check before sending request.
+                alert('Invalid Password Format: ' + validationResult.message);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/patient/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('patientId', data.patient.patient_id);
+                    localStorage.setItem('patientName', data.patient.name);
+                    localStorage.setItem('patientPhone', data.patient.phone);
+                    localStorage.setItem('patientAddress', data.patient.address || 'Not Provided');
+                    localStorage.setItem('role', 'patient');
+                    window.location.href = '/patient/dashboard.html';
+                } else {
+                    alert(data.message || 'Login failed');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('An error occurred');
+            }
+        });
+    </script>
+</body>
+
+</html>

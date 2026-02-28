@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Dashboard - PREDICT_AI</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --medical-blue: #3b82f6;
+            --medical-dark: #1e3a8a;
+            --text-gray: #64748b;
+            --light-bg: #f8fafc;
+        }
+
+        body {
+            background: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero-banner {
+            height: 350px;
+            background: linear-gradient(rgba(30, 58, 138, 0.8), rgba(59, 130, 246, 0.7)), url('../images/hospital.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            color: white;
+            padding-top: 2rem;
+            position: relative;
+        }
+
+        /* Navbar inside Hero */
+        .navbar-overlay {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+            z-index: 20;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-logo img {
+            height: 45px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--medical-blue);
+            font-weight: 700;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Floating Content Wrapper */
+        .content-wrapper {
+            max-width: 1200px;
+            margin: -100px auto 4rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            color: var(--medical-dark);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .section-title p {
+            color: var(--text-gray);
+            margin: 0.5rem 0 0;
+            font-size: 0.9rem;
+        }
+
+        /* Table Styles */
+        .staff-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .staff-table th {
+            background: #f8fafc;
+            color: var(--text-gray);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .staff-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .staff-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 0.5rem;
+        }
+
+        .btn-edit {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .btn-edit:hover {
+            background: #dcfce7;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            z-index: 100;
+        }
+
+        .fab:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.5);
+        }
+
+        /* Modal specific adjustments */
+        .modal {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: none;
+            padding: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-banner">
+        <div class="navbar-overlay">
+            <a href="../index.html" class="logo-container">
+                <img src="../images/logo.png" alt="Logo">
+                <span class="brand-text">PREDICT_AI</span>
+            </a>
+
+            <div class="nav-actions">
+                <select onchange="switchLanguage(this.value)" class="lang-select"
+                    style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 8px; padding: 0.5rem;">
+                    <option value="en" style="color: black;">English</option>
+                    <option value="hi" style="color: black;">हिंदी</option>
+                </select>
+
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <span class="user-name" id="hospName">Hospital Name</span>
+                </div>
+
+                <button onclick="window.location.href='lab_login.html'"
+                    style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; margin-right: 0.5rem;">
+                    <i class="fas fa-flask"></i> Lab Login
+                </button>
+
+                <button onclick="logout()"
+                    style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.3); color: white; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Content -->
+    <div class="content-wrapper">
+        <div class="dashboard-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <h2>Manage Hospital Staff</h2>
+                    <p>View, Add, Update, and Remove Staff Members</p>
+                </div>
+                <div style="color: var(--text-gray); font-size: 0.9rem;">
+                    <i class="fas fa-users-cog"></i> Staff Management Portal
+                </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="staff-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Age/Gender</th>
+                            <th>Salary</th>
+                            <th>Joined Date</th>
+                            <th>Aadhar</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffList">
+                        <tr>
+                            <td colspan="7" class="text-center" style="padding: 3rem; color: #94a3b8;">
+                                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                                <p style="margin-top: 1rem;">Loading staff details...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="staffModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 class="mb-3" id="modalTitle" style="color: var(--medical-dark); font-weight: 700;">Add New Staff</h3>
+            <form id="staffForm">
+                <input type="hidden" id="staffId">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="sName" class="form-input" required placeholder="Enter full name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Role / Work Type</label>
+                        <input type="text" id="sRole" class="form-input" placeholder="e.g. Nurse, Ward Boy" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Salary (₹)</label>
+                        <input type="number" id="sSalary" class="form-input" required placeholder="Monthly Salary">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" id="sAge" class="form-input" required placeholder="Age">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select id="sGender" class="form-select">
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Joining</label>
+                    <input type="date" id="sDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Aadhar Number</label>
+                    <input type="text" id="sAadhar" class="form-input" maxlength="12" pattern="[0-9]{12}" required
+                        placeholder="12-digit Aadhar Number">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <a href="lab_login.html" class="btn btn-outline" style="padding: 0.5rem 1rem;">Lab Portal</a>
+                    <button type="button" class="btn btn-outline" style="flex: 1;"
+                        onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-submit" style="flex: 1;">Save Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="fab" onclick="openModal()">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <script src="../js/common.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        document.getElementById('hospName').textContent = localStorage.getItem('hospitalName') || 'Hospital';
+
+        document.addEventListener('DOMContentLoaded', loadStaff);
+
+        async function loadStaff() {
+            const tbody = document.getElementById('staffList');
+            try {
+                const response = await fetch('/api/hospital/staff', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    tbody.innerHTML = '';
+                    if (data.staff.length === 0) {
+                        tbody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center" style="padding: 4rem;">
+                                    <div style="color: #cbd5e1; margin-bottom: 1rem;">
+                                        <i class="fas fa-user-nurse fa-3x"></i>
+                                    </div>
+                                    <p style="color: #64748b; font-size: 1.1rem;">No staff members found</p>
+                                    <p style="color: #94a3b8; font-size: 0.9rem;">Click the + button to add your first staff member</p>
+                                </td>
+                            </tr>`;
+                        return;
+                    }
+
+                    data.staff.forEach(s => {
+                        const date = new Date(s.date_of_joining).toLocaleDateString();
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 0.8rem;">
+                                        <div style="width: 32px; height: 32px; background: #e0f2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--medical-blue); font-size: 0.8rem; font-weight: 700;">
+                                            ${s.name.charAt(0)}
+                                        </div>
+                                        <span style="font-weight: 600; color: #1e293b;">${s.name}</span>
+                                    </div>
+                                </td>
+                                <td><span class="role-badge">${s.work_type}</span></td>
+                                <td style="color: #64748b;">${s.age} / ${s.gender}</td>
+                                <td style="font-family: monospace; font-weight: 600; color: #475569;">₹${s.salary}</td>
+                                <td style="color: #64748b;">${date}</td>
+                                <td style="color: #64748b; letter-spacing: 0.5px;">${s.aadhar_number}</td>
+                                <td>
+                                    <button class="action-btn btn-edit" onclick='editStaff(${JSON.stringify(s)})' title="Edit">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" onclick="deleteStaff('${s.staff_id}')" title="Remove">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #ef4444; padding: 2rem;">Failed to load staff data</td></tr>';
+            }
+        }
+
+        function openModal() {
+            document.getElementById('staffForm').reset();
+            document.getElementById('staffId').value = '';
+            document.getElementById('modalTitle').textContent = 'Add New Staff';
+            document.getElementById('staffModal').style.display = 'flex';
+        }
+        function closeModal() { document.getElementById('staffModal').style.display = 'none'; }
+
+        // Close modal when clicking outside
+        document.getElementById('staffModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('staffModal')) {
+                closeModal();
+            }
+        });
+
+        function editStaff(s) {
+            document.getElementById('staffId').value = s.staff_id;
+            document.getElementById('sName').value = s.name;
+            document.getElementById('sRole').value = s.work_type;
+            document.getElementById('sSalary').value = s.salary;
+            document.getElementById('sAge').value = s.age;
+            document.getElementById('sGender').value = s.gender;
+            document.getElementById('sDate').value = s.date_of_joining.split('T')[0];
+            document.getElementById('sAadhar').value = s.aadhar_number;
+
+            document.getElementById('modalTitle').textContent = 'Edit Staff';
+            document.getElementById('staffModal').style.display = 'flex';
+        }
+
+        document.getElementById('staffForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('staffId').value;
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `/api/hospital/staff/${id}` : '/api/hospital/staff';
+
+            const body = {
+                name: document.getElementById('sName').value,
+                work_type: document.getElementById('sRole').value,
+                salary: document.getElementById('sSalary').value,
+                age: document.getElementById('sAge').value,
+                gender: document.getElementById('sGender').value,
+                date_of_joining: document.getElementById('sDate').value,
+                aadhar_number: document.getElementById('sAadhar').value
+            };
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    closeModal();
+                    loadStaff();
+                } else {
+                    alert(data.message);
+                }
+            } catch (e) {
+                alert('Operation failed');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        async function deleteStaff(id) {
+            if (!confirm('Are you sure you want to remove this staff member? This action cannot be undone.')) return;
+            try {
+                await fetch(`/api/hospital/staff/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadStaff();
+            } catch (e) { alert('Delete failed'); }
+        }
+
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+    </script>
+</body>
+
+</html>
