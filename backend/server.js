@@ -1,3 +1,8 @@
+// Fix for pdf-parse (pdf.js) crashing in newer Node.js environments
+if (typeof global.DOMMatrix === 'undefined') {
+    global.DOMMatrix = class DOMMatrix { };
+}
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
